@@ -1,4 +1,7 @@
-﻿namespace SymulacjaGryTaktycznejWinFormTEB
+﻿using System.Media;
+using WMPLib;
+
+namespace SymulacjaGryTaktycznejWinFormTEB
 {
     partial class Form1
     {
@@ -11,6 +14,16 @@
         private System.Windows.Forms.Button btnWojna;
         private System.Windows.Forms.TextBox txtWynik;
         private System.Windows.Forms.Label lblElapsedTime;
+
+        private WindowsMediaPlayer berserkSound;
+        private WindowsMediaPlayer shieldBlockSound;
+        private WindowsMediaPlayer doubleStrikeSound;
+        private WindowsMediaPlayer fireballSound;
+        private WindowsMediaPlayer healSound;
+        private WindowsMediaPlayer manaShieldSound;
+        private Image fireballEffect;
+        private Image healEffect;
+        private Image manaShieldEffect;
 
         protected override void Dispose(bool disposing)
         {
@@ -42,8 +55,12 @@
             // lblWojownikHP
             // 
             this.lblWojownikHP.AutoSize = true;
-            this.lblWojownikHP.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblWojownikHP.Location = new System.Drawing.Point(50, 210); // Adjust the location as needed
+            this.lblWojownikHP.Font = new System.Drawing.Font(
+                "Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold,
+                System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWojownikHP.Location =
+                new System.Drawing.Point(50,
+                    210); // Adjust the location as needed
             this.lblWojownikHP.Name = "lblWojownikHP";
             this.lblWojownikHP.Size = new System.Drawing.Size(100, 20);
             this.lblWojownikHP.TabIndex = 0;
@@ -52,8 +69,12 @@
             // lblMagHP
             // 
             this.lblMagHP.AutoSize = true;
-            this.lblMagHP.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMagHP.Location = new System.Drawing.Point(626, 210); // Adjust the location as needed
+            this.lblMagHP.Font = new System.Drawing.Font("Microsoft Sans Serif",
+                12F, System.Drawing.FontStyle.Bold,
+                System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMagHP.Location =
+                new System.Drawing.Point(626,
+                    210); // Adjust the location as needed
             this.lblMagHP.Name = "lblMagHP";
             this.lblMagHP.Size = new System.Drawing.Size(100, 20);
             this.lblMagHP.TabIndex = 1;
@@ -75,7 +96,8 @@
             this.picWojownik.Location = new System.Drawing.Point(50, 100);
             this.picWojownik.Name = "picWojownik";
             this.picWojownik.Size = new System.Drawing.Size(100, 100);
-            this.picWojownik.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picWojownik.SizeMode =
+                System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picWojownik.TabIndex = 0;
             this.picWojownik.TabStop = false;
             // 
@@ -84,7 +106,8 @@
             this.picMag.Location = new System.Drawing.Point(626, 100);
             this.picMag.Name = "picMag";
             this.picMag.Size = new System.Drawing.Size(100, 100);
-            this.picMag.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picMag.SizeMode =
+                System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picMag.TabIndex = 1;
             this.picMag.TabStop = false;
             // 
@@ -96,7 +119,8 @@
             this.btnPojedynek.TabIndex = 1;
             this.btnPojedynek.Text = "Pojedynek";
             this.btnPojedynek.UseVisualStyleBackColor = true;
-            this.btnPojedynek.Click += new System.EventHandler(this.btnPojedynek_Click);
+            this.btnPojedynek.Click +=
+                new System.EventHandler(this.btnPojedynek_Click);
             // 
             // btnWalka
             // 
@@ -130,7 +154,9 @@
             // lblElapsedTime
             // 
             this.lblElapsedTime.AutoSize = true;
-            this.lblElapsedTime.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblElapsedTime.Font = new System.Drawing.Font("Segoe UI", 12F,
+                System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point);
             this.lblElapsedTime.Location = new System.Drawing.Point(12, 9);
             this.lblElapsedTime.Name = "lblElapsedTime";
             this.lblElapsedTime.Size = new System.Drawing.Size(0, 21);
@@ -149,7 +175,9 @@
             this.Controls.Add(this.pnlBattlefield);
             this.Name = "Form1";
             this.Text = "Tactical Battle Simulator by Nicola Kaleta";
-            this.Icon = new System.Drawing.Icon("Resources/ikonka.ico"); // Set the path to your icon file
+            this.Icon =
+                new System.Drawing.Icon(
+                    "Resources/ikonka.ico"); // Set the path to your icon file
             this.pnlBattlefield.ResumeLayout(false);
             this.pnlBattlefield.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picWojownik)).EndInit();

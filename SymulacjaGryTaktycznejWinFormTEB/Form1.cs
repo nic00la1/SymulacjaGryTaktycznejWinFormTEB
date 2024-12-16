@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Media;
 using System.Timers;
 using SymulacjaGryTaktycznejWinFormTEB.Classes;
+using SymulacjaGryTaktycznejWinFormTEB.Classes.Symulacje;
 using WMPLib;
 using Timer = System.Timers.Timer;
 
@@ -54,7 +55,74 @@ public partial class Form1 : Form
         bloodEffect =
             Image.FromFile(Path.Combine(basePath, "Resources", "blood.png"));
 
-        // Flip the warrior image horizontally
+        // Load new sound effects
+        berserkSound = new WindowsMediaPlayer();
+        berserkSound.URL = Path.Combine(basePath, "Resources", "berserk.mp3");
+        berserkSound.settings.autoStart = false;
+
+        shieldBlockSound = new WindowsMediaPlayer();
+        shieldBlockSound.URL =
+            Path.Combine(basePath, "Resources", "shieldBlock.mp3");
+        shieldBlockSound.settings.autoStart = false;
+
+        doubleStrikeSound = new WindowsMediaPlayer();
+        doubleStrikeSound.URL =
+            Path.Combine(basePath, "Resources", "doubleStrike.mp3");
+        doubleStrikeSound.settings.autoStart = false;
+
+        fireballSound = new WindowsMediaPlayer();
+        fireballSound.URL = Path.Combine(basePath, "Resources", "fireball.mp3");
+        fireballSound.settings.autoStart = false;
+
+        healSound = new WindowsMediaPlayer();
+        healSound.URL = Path.Combine(basePath, "Resources", "heal.mp3");
+        healSound.settings.autoStart = false;
+
+        manaShieldSound = new WindowsMediaPlayer();
+        manaShieldSound.URL =
+            Path.Combine(basePath, "Resources", "manaShield.mp3");
+        manaShieldSound.settings.autoStart = false;
+
+        try
+        {
+            // Load new visual effects
+            fireballEffect =
+                Image.FromFile(Path.Combine(basePath, "Resources",
+                    "fireball.png"));
+            healEffect =
+                Image.FromFile(Path.Combine(basePath, "Resources", "heal.png"));
+            manaShieldEffect =
+                Image.FromFile(Path.Combine(basePath, "Resources",
+                    "manaShield.png"));
+
+            // Debugging: Check if images are loaded correctly
+            Debug.WriteLine("Images loaded successfully.");
+            Debug.WriteLine($"fireballEffect: {fireballEffect != null}");
+            Debug.WriteLine($"healEffect: {healEffect != null}");
+            Debug.WriteLine($"manaShieldEffect: {manaShieldEffect != null}");
+        }
+        catch (OutOfMemoryException ex)
+        {
+            MessageBox.Show(
+                "Failed to load images due to insufficient memory. Please ensure the images are optimized and try again.",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Debug.WriteLine($"OutOfMemoryException: {ex.Message}");
+        }
+        catch (FileNotFoundException ex)
+        {
+            MessageBox.Show(
+                "One or more image files were not found. Please check the file paths and try again.",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Debug.WriteLine($"FileNotFoundException: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                "An unexpected error occurred while loading images.", "Error",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Debug.WriteLine($"Exception: {ex.Message}");
+        }
+
         picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
 
         // Set initial HP values
@@ -74,9 +142,15 @@ public partial class Form1 : Form
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
-            await Symulacja.PojedynekAsync(wojownik, mag, UpdateUI,
+            await Pojedynek.PojedynekAsync(wojownik, mag, UpdateUI,
                 (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
-                ShowVictoryScreen);
+                ShowVictoryScreen,
+                PlayBerserkEffect,
+                PlayShieldBlockEffect,
+                PlayDoubleStrikeEffect,
+                PlayFireballEffect,
+                PlayHealEffect,
+                PlayManaShieldEffect);
             txtWynik.Text = sw.ToString();
         }
 
@@ -97,7 +171,7 @@ public partial class Form1 : Form
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
-            await Symulacja.WalkaAsync(oddzial1, oddzial2, UpdateUI,
+            await Walka.WalkaAsync(oddzial1, oddzial2, UpdateUI,
                 (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
                 ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
@@ -126,7 +200,7 @@ public partial class Form1 : Form
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
-            await Symulacja.WojnaAsync(armia1, armia2, UpdateUI,
+            await Wojna.WojnaAsync(armia1, armia2, UpdateUI,
                 (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
                 ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
@@ -166,14 +240,6 @@ public partial class Form1 : Form
             timer.Stop();
         };
         timer.Start();
-
-        // Draw the blood effect
-        using (Graphics g = CreateGraphics())
-        {
-            g.DrawImage(bloodEffect,
-                new Rectangle(defender.Location.X + defender.Width / 2 - 25,
-                    defender.Location.Y + defender.Height / 2 - 25, 50, 50));
-        }
 
         // Change the background color of the defender to red
         defender.BackColor = Color.Red;
@@ -221,5 +287,137 @@ public partial class Form1 : Form
         else
             lblElapsedTime.Text =
                 $"Czas: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}";
+    }
+
+    private void PlayBerserkEffect()
+    {
+        berserkSound.controls.play();
+        PictureBox target = picWojownik;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            target.BackColor = Color.Transparent;
+            Invalidate(new Rectangle(target.Location, target.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the target to red
+        target.BackColor = Color.Purple;
+    }
+
+    private void PlayShieldBlockEffect()
+    {
+        shieldBlockSound.controls.play();
+        PictureBox target = picWojownik;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            target.BackColor = Color.Transparent;
+            Invalidate(new Rectangle(target.Location, target.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the target to blue
+        target.BackColor = Color.Blue;
+    }
+
+    private void PlayDoubleStrikeEffect()
+    {
+        doubleStrikeSound.controls.play();
+        PictureBox target = picWojownik;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            target.BackColor = Color.Transparent;
+            Invalidate(new Rectangle(target.Location, target.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the target to yellow
+        target.BackColor = Color.Yellow;
+    }
+
+    private void PlayFireballEffect()
+    {
+        fireballSound.controls.play();
+        PictureBox target = picMag;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer animationTimer = new() { Interval = 20 };
+        int animationStep = 0;
+        int totalSteps = 25;
+        int initialX = target.Location.X;
+        int initialY = target.Location.Y;
+
+        animationTimer.Tick += (s, e) =>
+        {
+            if (animationStep < totalSteps)
+            {
+                int offsetX =
+                    (int)(Math.Sin(animationStep * Math.PI / totalSteps) * 20);
+                int offsetY =
+                    (int)(Math.Cos(animationStep * Math.PI / totalSteps) * 20);
+                target.Location =
+                    new Point(initialX + offsetX, initialY + offsetY);
+                animationStep++;
+            } else
+            {
+                target.Location = new Point(initialX, initialY);
+                target.BackColor = Color.Transparent;
+                Invalidate(new Rectangle(target.Location, target.Size));
+                animationTimer.Stop();
+            }
+        };
+        animationTimer.Start();
+
+        // Change the background color of the target to orange
+        target.BackColor = Color.Orange;
+    }
+
+    private void PlayHealEffect()
+    {
+        healSound.controls.play();
+        PictureBox target = picMag;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            target.BackColor = Color.Transparent;
+            Invalidate(new Rectangle(target.Location, target.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the target to green
+        target.BackColor = Color.Green;
+    }
+
+    private void PlayManaShieldEffect()
+    {
+        manaShieldSound.controls.play();
+        PictureBox target = picMag;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            target.BackColor = Color.Transparent;
+            Invalidate(new Rectangle(target.Location, target.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the target to blue
+        target.BackColor = Color.Blue;
     }
 }
