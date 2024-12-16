@@ -15,30 +15,62 @@ public partial class Form1 : Form
 
     private WindowsMediaPlayer attackSound;
     private WindowsMediaPlayer magicalWhooshSound;
-    private Image bloodEffect;
     private Stopwatch stopwatch;
     private Timer updateTimer;
     private Label lblWojownikHP;
     private Label lblMagHP;
     private bool isBattleActive;
+    private Jednostka player;
+    private Jednostka opponent;
 
-    public Form1()
+    public Form1(string selectedCharacter, string selectedOpponent)
     {
         InitializeComponent();
-        LoadResources();
+        LoadResources(selectedCharacter, selectedOpponent);
         stopwatch = new Stopwatch();
         updateTimer = new Timer(1000);
         updateTimer.Elapsed += UpdateElapsedTime;
         isBattleActive = false;
+
+        // Initialize player and opponent based on selection
+        if (selectedCharacter == "Wojownik")
+            player = new Wojownik() { Zycie = DefaultWojownikHP };
+        else
+            player = new Mag() { Zycie = DefaultMagHP };
+
+        if (selectedOpponent == "Wojownik")
+            opponent = new Wojownik() { Zycie = DefaultWojownikHP };
+        else
+            opponent = new Mag() { Zycie = DefaultMagHP };
+
+        // Set initial HP values
+        lblWojownikHP.Text = $"HP: {player.Zycie}";
+        lblMagHP.Text = $"HP: {opponent.Zycie}";
     }
 
-    private void LoadResources()
+    private void LoadResources(string selectedCharacter,
+                               string selectedOpponent
+    )
     {
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
-        picWojownik.Image =
-            Image.FromFile(Path.Combine(basePath, "Resources", "wojownik.png"));
-        picMag.Image =
-            Image.FromFile(Path.Combine(basePath, "Resources", "mag.png"));
+
+        // Set images based on selected characters
+        if (selectedCharacter == "Wojownik")
+            picWojownik.Image =
+                Image.FromFile(Path.Combine(basePath, "Resources",
+                    "wojownik.png"));
+        else
+            picWojownik.Image =
+                Image.FromFile(Path.Combine(basePath, "Resources", "mag.png"));
+
+        if (selectedOpponent == "Wojownik")
+            picMag.Image =
+                Image.FromFile(Path.Combine(basePath, "Resources",
+                    "wojownik.png"));
+        else
+            picMag.Image =
+                Image.FromFile(Path.Combine(basePath, "Resources", "mag.png"));
+
         pnlBattlefield.BackgroundImage =
             Image.FromFile(Path.Combine(basePath, "Resources", "map.png"));
 
@@ -50,10 +82,6 @@ public partial class Form1 : Form
         magicalWhooshSound.URL =
             Path.Combine(basePath, "Resources", "magicalWhoosh.mp3");
         magicalWhooshSound.settings.autoStart = false;
-
-        // Load the blood effect image
-        bloodEffect =
-            Image.FromFile(Path.Combine(basePath, "Resources", "blood.png"));
 
         // Load new sound effects
         berserkSound = new WindowsMediaPlayer();
@@ -209,6 +237,68 @@ public partial class Form1 : Form
         EndBattle();
     }
 
+    private void btnAttack_Click(object sender, EventArgs e)
+    {
+        if (isBattleActive) return;
+        isBattleActive = true;
+
+        StartBattle();
+        PerformAttack(player, opponent);
+        EndBattle();
+    }
+
+    private void btnCastSpell_Click(object sender, EventArgs e)
+    {
+        if (isBattleActive) return;
+        isBattleActive = true;
+
+        StartBattle();
+        if (player is Mag mag)
+        {
+            int spellDamage = mag.CastSpell();
+            opponent.Zycie -= spellDamage;
+            UpdateUI(
+                $"{mag.GetType().Name} rzuca zaklêcie za {spellDamage} pkt obra¿eñ. {opponent.GetType().Name} pozostaje {opponent.Zycie} HP");
+            PlayFireballEffect();
+        }
+
+        EndBattle();
+    }
+
+    private void btnHeal_Click(object sender, EventArgs e)
+    {
+        if (isBattleActive) return;
+        isBattleActive = true;
+
+        StartBattle();
+        if (player is Mag mag)
+        {
+            mag.Heal();
+            UpdateUI(
+                $"{mag.GetType().Name} leczy siê za 20 HP. {mag.GetType().Name} ma teraz {mag.Zycie} HP");
+            PlayHealEffect();
+        }
+
+        EndBattle();
+    }
+
+    private void btnManaShield_Click(object sender, EventArgs e)
+    {
+        if (isBattleActive) return;
+        isBattleActive = true;
+
+        StartBattle();
+        if (player is Mag mag)
+        {
+            mag.ManaShield();
+            UpdateUI(
+                $"{mag.GetType().Name} u¿ywa tarczy many. Obrona wzrasta o 10.");
+            PlayManaShieldEffect();
+        }
+
+        EndBattle();
+    }
+
     private void StartBattle()
     {
         stopwatch.Restart();
@@ -223,6 +313,24 @@ public partial class Form1 : Form
         txtWynik.AppendText(
             $"Czas rozgrywki: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}\n");
         isBattleActive = false;
+    }
+
+    private void PerformAttack(Jednostka atakujacy, Jednostka obronca)
+    {
+        int obrazenia =
+            Math.Max(1, atakujacy.ObliczObrazenia() - obronca.Obrona);
+        obronca.Zycie -= obrazenia;
+        UpdateUI(
+            $"{atakujacy.GetType().Name} atakuje za {obrazenia} pkt obra¿eñ. {obronca.GetType().Name} pozostaje {obronca.Zycie} HP");
+        AnimateAttack(atakujacy, obronca);
+
+        if (obronca.Zycie <= 0)
+        {
+            string result =
+                $"{obronca.GetType().Name} ginie. {atakujacy.GetType().Name} wygrywa.";
+            UpdateUI(result);
+            ShowVictoryScreen(result);
+        }
     }
 
     private void AnimateAttack(Jednostka atakujacy, Jednostka obronca)
@@ -269,8 +377,19 @@ public partial class Form1 : Form
         else
         {
             EndBattle(); // Stop the stopwatch and timer here
-            MessageBox.Show(message, "Zwyciêzca", MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+
+            // Create summary
+            string summary =
+                $"Czas rozgrywki: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}\n" +
+                $"Wynik: {message}\n" +
+                $"HP Wojownika: {lblWojownikHP.Text}\n" +
+                $"HP Maga: {lblMagHP.Text}\n";
+
+            // Show summary form
+            using (SummaryForm summaryForm = new("Zwyciêzca", summary))
+            {
+                summaryForm.ShowDialog();
+            }
 
             // Reset HP to default values
             lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
@@ -304,7 +423,7 @@ public partial class Form1 : Form
         };
         timer.Start();
 
-        // Change the background color of the target to red
+        // Change the background color of the target to purple
         target.BackColor = Color.Purple;
     }
 

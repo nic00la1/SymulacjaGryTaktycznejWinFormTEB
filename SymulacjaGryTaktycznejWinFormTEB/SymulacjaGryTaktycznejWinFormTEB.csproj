@@ -12,6 +12,7 @@
     <None Remove="Resources\attack.mp3" />
     <None Remove="Resources\berserk.mp3" />
     <None Remove="Resources\blood.png" />
+    <None Remove="Resources\crown.png" />
     <None Remove="Resources\doubleStrike.mp3" />
     <None Remove="Resources\fireball.mp3" />
     <None Remove="Resources\fireball.png" />
@@ -92,6 +93,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\blood.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\crown.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\doubleStrike.mp3">
