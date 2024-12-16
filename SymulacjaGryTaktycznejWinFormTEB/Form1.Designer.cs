@@ -148,7 +148,8 @@
             this.Controls.Add(this.btnPojedynek);
             this.Controls.Add(this.pnlBattlefield);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Tactical Battle Simulator by Nicola Kaleta";
+            this.Icon = new System.Drawing.Icon("Resources/ikonka.ico"); // Set the path to your icon file
             this.pnlBattlefield.ResumeLayout(false);
             this.pnlBattlefield.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picWojownik)).EndInit();
