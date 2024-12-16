@@ -30,6 +30,9 @@ public partial class Form1 : Form
         magicalWhooshSound = new WindowsMediaPlayer();
         magicalWhooshSound.URL =
             Path.Combine(basePath, "Resources", "magicalWhoosh.mp3");
+
+        // Flip the warrior image horizontally
+        picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
     }
 
     private void btnPojedynek_Click(object sender, EventArgs e)
@@ -90,10 +93,6 @@ public partial class Form1 : Form
                                Jednostka obronca
     )
     {
-        if (atakujacy is Wojownik)
-            attackSound.controls.play();
-        else if (atakujacy is Mag) magicalWhooshSound.controls.play();
-
         defender.BackColor = Color.Red;
         System.Windows.Forms.Timer timer = new() { Interval = 500 };
         timer.Tick += (s, e) =>
@@ -102,5 +101,10 @@ public partial class Form1 : Form
             timer.Stop();
         };
         timer.Start();
+
+        // Play the sound after the animation starts
+        if (atakujacy is Wojownik)
+            attackSound.controls.play();
+        else if (atakujacy is Mag) magicalWhooshSound.controls.play();
     }
 }
