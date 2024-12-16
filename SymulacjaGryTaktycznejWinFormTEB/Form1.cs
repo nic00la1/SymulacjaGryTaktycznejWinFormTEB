@@ -9,6 +9,7 @@ public partial class Form1 : Form
 {
     private WindowsMediaPlayer attackSound;
     private WindowsMediaPlayer magicalWhooshSound;
+    private Image bloodEffect;
 
     public Form1()
     {
@@ -23,19 +24,27 @@ public partial class Form1 : Form
             Image.FromFile(Path.Combine(basePath, "Resources", "wojownik.png"));
         picMag.Image =
             Image.FromFile(Path.Combine(basePath, "Resources", "mag.png"));
-        pnlMap.BackgroundImage =
+        pnlBattlefield.BackgroundImage =
             Image.FromFile(Path.Combine(basePath, "Resources", "map.png"));
+
         attackSound = new WindowsMediaPlayer();
         attackSound.URL = Path.Combine(basePath, "Resources", "attack.mp3");
+        attackSound.settings.autoStart = false;
+
         magicalWhooshSound = new WindowsMediaPlayer();
         magicalWhooshSound.URL =
             Path.Combine(basePath, "Resources", "magicalWhoosh.mp3");
+        magicalWhooshSound.settings.autoStart = false;
+
+        // Load the blood effect image
+        bloodEffect =
+            Image.FromFile(Path.Combine(basePath, "Resources", "blood.png"));
 
         // Flip the warrior image horizontally
         picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
     }
 
-    private void btnPojedynek_Click(object sender, EventArgs e)
+    private async void btnPojedynek_Click(object sender, EventArgs e)
     {
         Wojownik wojownik = new();
         Mag mag = new();
@@ -43,14 +52,14 @@ public partial class Form1 : Form
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
-            Symulacja.Pojedynek(wojownik, mag);
+            await Symulacja.PojedynekAsync(wojownik, mag, UpdateUI,
+                (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
+                ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
         }
-
-        AnimateAttack(picWojownik, picMag, wojownik, mag);
     }
 
-    private void btnWalka_Click(object sender, EventArgs e)
+    private async void btnWalka_Click(object sender, EventArgs e)
     {
         Oddzia³ oddzial1 = new(new Wojownik(), 10, "Oddzia³ 1");
         Oddzia³ oddzial2 = new(new Mag(), 5, "Oddzia³ 2");
@@ -58,15 +67,14 @@ public partial class Form1 : Form
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
-            Symulacja.Walka(oddzial1, oddzial2);
+            await Symulacja.WalkaAsync(oddzial1, oddzial2, UpdateUI,
+                (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
+                ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
         }
-
-        AnimateAttack(picWojownik, picMag, oddzial1.Jednostka,
-            oddzial2.Jednostka);
     }
 
-    private void btnWojna_Click(object sender, EventArgs e)
+    private async void btnWojna_Click(object sender, EventArgs e)
     {
         Oddzia³ oddzial1 = new(new Wojownik(), 10, "Oddzia³ 1");
         Oddzia³ oddzial2 = new(new Mag(), 5, "Oddzia³ 2");
@@ -79,32 +87,60 @@ public partial class Form1 : Form
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
-            Symulacja.Wojna(armia1, armia2);
+            await Symulacja.WojnaAsync(armia1, armia2, UpdateUI,
+                (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
+                ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
         }
-
-        AnimateAttack(picWojownik, picMag, oddzial1.Jednostka,
-            oddzial2.Jednostka);
     }
 
-    private void AnimateAttack(PictureBox attacker,
-                               PictureBox defender,
-                               Jednostka atakujacy,
-                               Jednostka obronca
-    )
+    private void AnimateAttack(Jednostka atakujacy, Jednostka obronca)
     {
-        defender.BackColor = Color.Red;
+        PictureBox attacker = atakujacy is Wojownik ? picWojownik : picMag;
+        PictureBox defender = obronca is Wojownik ? picWojownik : picMag;
+
+        // Create a timer to handle the animation
         System.Windows.Forms.Timer timer = new() { Interval = 500 };
         timer.Tick += (s, e) =>
         {
             defender.BackColor = Color.Transparent;
+            Invalidate(new Rectangle(defender.Location, defender.Size));
             timer.Stop();
         };
         timer.Start();
 
+        // Draw the blood effect
+        using (Graphics g = CreateGraphics())
+        {
+            g.DrawImage(bloodEffect,
+                new Rectangle(defender.Location.X + defender.Width / 2 - 25,
+                    defender.Location.Y + defender.Height / 2 - 25, 50, 50));
+        }
+
+        // Change the background color of the defender to red
+        defender.BackColor = Color.Red;
+
         // Play the sound after the animation starts
         if (atakujacy is Wojownik)
             attackSound.controls.play();
-        else if (atakujacy is Mag) magicalWhooshSound.controls.play();
+        else if (atakujacy is Mag)
+            magicalWhooshSound.controls.play();
+    }
+
+    private void UpdateUI(string message)
+    {
+        if (InvokeRequired)
+            Invoke(new Action<string>(UpdateUI), message);
+        else
+            txtWynik.AppendText(message + Environment.NewLine);
+    }
+
+    private void ShowVictoryScreen(string message)
+    {
+        if (InvokeRequired)
+            Invoke(new Action<string>(ShowVictoryScreen), message);
+        else
+            MessageBox.Show(message, "Zwyciêzca", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
     }
 }

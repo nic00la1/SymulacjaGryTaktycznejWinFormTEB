@@ -8,7 +8,13 @@ namespace SymulacjaGryTaktycznejWinFormTEB.Classes;
 
 public static class Symulacja
 {
-    public static void Pojedynek(Jednostka jednostka1, Jednostka jednostka2)
+    public static async Task PojedynekAsync(Jednostka jednostka1,
+                                            Jednostka jednostka2,
+                                            Action<string> updateUI,
+                                            Action<Jednostka, Jednostka>
+                                                animateAttack,
+                                            Action<string> showVictoryScreen
+    )
     {
         Jednostka atakujacy, obronca;
 
@@ -27,13 +33,17 @@ public static class Symulacja
             int obrazenia = Math.Max(1,
                 atakujacy.ObliczObrazenia() - obronca.Obrona);
             obronca.Zycie -= obrazenia;
-            Console.WriteLine(
+            updateUI(
                 $"{atakujacy.GetType().Name} atakuje za {obrazenia} pkt obrażeń. {obronca.GetType().Name} pozostaje {obronca.Zycie} HP");
+
+            animateAttack(atakujacy, obronca);
 
             if (obronca.Zycie <= 0)
             {
-                Console.WriteLine(
-                    $"{obronca.GetType().Name} ginie. {atakujacy.GetType().Name} wygrywa.");
+                string result =
+                    $"{obronca.GetType().Name} ginie. {atakujacy.GetType().Name} wygrywa.";
+                updateUI(result);
+                showVictoryScreen(result);
                 break;
             }
 
@@ -41,10 +51,19 @@ public static class Symulacja
             Jednostka temp = atakujacy;
             atakujacy = obronca;
             obronca = temp;
+
+            // Introduce a delay between actions
+            await Task.Delay(2000);
         }
     }
 
-    public static void Walka(Oddział oddzial1, Oddział oddzial2)
+    public static async Task WalkaAsync(Oddział oddzial1,
+                                        Oddział oddzial2,
+                                        Action<string> updateUI,
+                                        Action<Jednostka, Jednostka>
+                                            animateAttack,
+                                        Action<string> showVictoryScreen
+    )
     {
         while (oddzial1.Ilosc > 0 && oddzial2.Ilosc > 0)
         {
@@ -83,19 +102,33 @@ public static class Symulacja
                 }
             }
 
-            Console.WriteLine(
+            updateUI(
                 $"Oddział {oddzial1.Nazwa} ma {oddzial1.Ilosc} jednostek.");
-            Console.WriteLine(
+            updateUI(
                 $"Oddział {oddzial2.Nazwa} ma {oddzial2.Ilosc} jednostek.");
+
+            animateAttack(oddzial1.Jednostka, oddzial2.Jednostka);
+
+            // Introduce a delay between actions
+            await Task.Delay(2000);
         }
 
+        string result;
         if (oddzial1.Ilosc > 0)
-            Console.WriteLine($"Oddział {oddzial1.Nazwa} wygrywa.");
+            result = $"Oddział {oddzial1.Nazwa} wygrywa.";
         else
-            Console.WriteLine($"Oddział {oddzial2.Nazwa} wygrywa.");
+            result = $"Oddział {oddzial2.Nazwa} wygrywa.";
+        updateUI(result);
+        showVictoryScreen(result);
     }
 
-    public static void Wojna(Armia armia1, Armia armia2)
+    public static async Task WojnaAsync(Armia armia1,
+                                        Armia armia2,
+                                        Action<string> updateUI,
+                                        Action<Jednostka, Jednostka>
+                                            animateAttack,
+                                        Action<string> showVictoryScreen
+    )
     {
         while (armia1.Oddziały.Any(o => o.Ilosc > 0) &&
                armia2.Oddziały.Any(o => o.Ilosc > 0))
@@ -145,15 +178,24 @@ public static class Symulacja
                 }
             }
 
-            Console.WriteLine(
+            updateUI(
                 $"Armia 1 ma {armia1.Oddziały.Sum(o => o.Ilosc)} jednostek.");
-            Console.WriteLine(
+            updateUI(
                 $"Armia 2 ma {armia2.Oddziały.Sum(o => o.Ilosc)} jednostek.");
+
+            animateAttack(armia1.Oddziały.First().Jednostka,
+                armia2.Oddziały.First().Jednostka);
+
+            // Introduce a delay between actions
+            await Task.Delay(2000);
         }
 
+        string result;
         if (armia1.Oddziały.Sum(o => o.Ilosc) > 0)
-            Console.WriteLine("Armia 1 wygrywa.");
+            result = "Armia 1 wygrywa.";
         else
-            Console.WriteLine("Armia 2 wygrywa.");
+            result = "Armia 2 wygrywa.";
+        updateUI(result);
+        showVictoryScreen(result);
     }
 }
