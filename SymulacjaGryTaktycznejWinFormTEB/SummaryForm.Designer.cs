@@ -72,7 +72,7 @@ namespace SymulacjaGryTaktycznejWinFormTEB
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(400, 300); // Adjusted size
             this.Controls.Add(this.picCrown);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.lblSummary);
