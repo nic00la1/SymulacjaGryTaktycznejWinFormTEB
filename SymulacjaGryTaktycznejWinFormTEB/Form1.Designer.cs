@@ -24,6 +24,8 @@
 
         private void InitializeComponent()
         {
+            this.lblWojownikHP = new System.Windows.Forms.Label();
+            this.lblMagHP = new System.Windows.Forms.Label();
             this.pnlBattlefield = new System.Windows.Forms.Panel();
             this.picWojownik = new System.Windows.Forms.PictureBox();
             this.picMag = new System.Windows.Forms.PictureBox();
@@ -37,10 +39,32 @@
             ((System.ComponentModel.ISupportInitialize)(this.picMag)).BeginInit();
             this.SuspendLayout();
             // 
+            // lblWojownikHP
+            // 
+            this.lblWojownikHP.AutoSize = true;
+            this.lblWojownikHP.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWojownikHP.Location = new System.Drawing.Point(50, 210); // Adjust the location as needed
+            this.lblWojownikHP.Name = "lblWojownikHP";
+            this.lblWojownikHP.Size = new System.Drawing.Size(100, 20);
+            this.lblWojownikHP.TabIndex = 0;
+            this.lblWojownikHP.Text = "HP: 100";
+            // 
+            // lblMagHP
+            // 
+            this.lblMagHP.AutoSize = true;
+            this.lblMagHP.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMagHP.Location = new System.Drawing.Point(626, 210); // Adjust the location as needed
+            this.lblMagHP.Name = "lblMagHP";
+            this.lblMagHP.Size = new System.Drawing.Size(100, 20);
+            this.lblMagHP.TabIndex = 1;
+            this.lblMagHP.Text = "HP: 100";
+            // 
             // pnlBattlefield
             // 
             this.pnlBattlefield.Controls.Add(this.picWojownik);
             this.pnlBattlefield.Controls.Add(this.picMag);
+            this.pnlBattlefield.Controls.Add(this.lblWojownikHP);
+            this.pnlBattlefield.Controls.Add(this.lblMagHP);
             this.pnlBattlefield.Location = new System.Drawing.Point(12, 12);
             this.pnlBattlefield.Name = "pnlBattlefield";
             this.pnlBattlefield.Size = new System.Drawing.Size(776, 300);
@@ -126,6 +150,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.pnlBattlefield.ResumeLayout(false);
+            this.pnlBattlefield.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picWojownik)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picMag)).EndInit();
             this.ResumeLayout(false);

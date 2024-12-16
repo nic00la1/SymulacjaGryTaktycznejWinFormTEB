@@ -9,11 +9,16 @@ namespace SymulacjaGryTaktycznejWinFormTEB;
 
 public partial class Form1 : Form
 {
+    private const int DefaultWojownikHP = 50;
+    private const int DefaultMagHP = 20;
+
     private WindowsMediaPlayer attackSound;
     private WindowsMediaPlayer magicalWhooshSound;
     private Image bloodEffect;
     private Stopwatch stopwatch;
     private Timer updateTimer;
+    private Label lblWojownikHP;
+    private Label lblMagHP;
 
     public Form1()
     {
@@ -49,13 +54,17 @@ public partial class Form1 : Form
 
         // Flip the warrior image horizontally
         picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+
+        // Set initial HP values
+        lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
+        lblMagHP.Text = $"HP: {DefaultMagHP}";
     }
 
     private async void btnPojedynek_Click(object sender, EventArgs e)
     {
         StartBattle();
-        Wojownik wojownik = new();
-        Mag mag = new();
+        Wojownik wojownik = new() { Zycie = DefaultWojownikHP };
+        Mag mag = new() { Zycie = DefaultMagHP };
 
         using (StringWriter sw = new())
         {
@@ -72,8 +81,10 @@ public partial class Form1 : Form
     private async void btnWalka_Click(object sender, EventArgs e)
     {
         StartBattle();
-        Oddzia³ oddzial1 = new(new Wojownik(), 10, "Oddzia³ 1");
-        Oddzia³ oddzial2 = new(new Mag(), 5, "Oddzia³ 2");
+        Oddzia³ oddzial1 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 10,
+            "Oddzia³ 1");
+        Oddzia³ oddzial2 =
+            new(new Mag() { Zycie = DefaultMagHP }, 5, "Oddzia³ 2");
 
         using (StringWriter sw = new())
         {
@@ -90,9 +101,12 @@ public partial class Form1 : Form
     private async void btnWojna_Click(object sender, EventArgs e)
     {
         StartBattle();
-        Oddzia³ oddzial1 = new(new Wojownik(), 10, "Oddzia³ 1");
-        Oddzia³ oddzial2 = new(new Mag(), 5, "Oddzia³ 2");
-        Oddzia³ oddzial3 = new(new Wojownik(), 8, "Oddzia³ 3");
+        Oddzia³ oddzial1 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 10,
+            "Oddzia³ 1");
+        Oddzia³ oddzial2 =
+            new(new Mag() { Zycie = DefaultMagHP }, 5, "Oddzia³ 2");
+        Oddzia³ oddzial3 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 8,
+            "Oddzia³ 3");
 
         Armia armia1 = new(new List<Oddzia³> { oddzial1, oddzial3 },
             new Bohater(5, 5));
@@ -129,6 +143,7 @@ public partial class Form1 : Form
     {
         PictureBox attacker = atakujacy is Wojownik ? picWojownik : picMag;
         PictureBox defender = obronca is Wojownik ? picWojownik : picMag;
+        Label defenderHPLabel = obronca is Wojownik ? lblWojownikHP : lblMagHP;
 
         // Create a timer to handle the animation
         System.Windows.Forms.Timer timer = new() { Interval = 500 };
@@ -156,6 +171,9 @@ public partial class Form1 : Form
             attackSound.controls.play();
         else if (atakujacy is Mag)
             magicalWhooshSound.controls.play();
+
+        // Update the defender's HP label
+        defenderHPLabel.Text = $"HP: {obronca.Zycie}";
     }
 
     private void UpdateUI(string message)
@@ -175,6 +193,10 @@ public partial class Form1 : Form
             EndBattle(); // Stop the stopwatch and timer here
             MessageBox.Show(message, "Zwyciêzca", MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
+
+            // Reset HP to default values
+            lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
+            lblMagHP.Text = $"HP: {DefaultMagHP}";
         }
     }
 
