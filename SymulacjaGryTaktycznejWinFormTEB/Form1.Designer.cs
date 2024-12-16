@@ -10,6 +10,7 @@
         private System.Windows.Forms.Button btnWalka;
         private System.Windows.Forms.Button btnWojna;
         private System.Windows.Forms.TextBox txtWynik;
+        private System.Windows.Forms.Label lblElapsedTime;
 
         protected override void Dispose(bool disposing)
         {
@@ -30,11 +31,10 @@
             this.btnWalka = new System.Windows.Forms.Button();
             this.btnWojna = new System.Windows.Forms.Button();
             this.txtWynik = new System.Windows.Forms.TextBox();
+            this.lblElapsedTime = new System.Windows.Forms.Label();
             this.pnlBattlefield.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picWojownik))
-                .BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picMag))
-                .BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picWojownik)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picMag)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlBattlefield
@@ -51,8 +51,7 @@
             this.picWojownik.Location = new System.Drawing.Point(50, 100);
             this.picWojownik.Name = "picWojownik";
             this.picWojownik.Size = new System.Drawing.Size(100, 100);
-            this.picWojownik.SizeMode =
-                System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picWojownik.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picWojownik.TabIndex = 0;
             this.picWojownik.TabStop = false;
             // 
@@ -61,8 +60,7 @@
             this.picMag.Location = new System.Drawing.Point(626, 100);
             this.picMag.Name = "picMag";
             this.picMag.Size = new System.Drawing.Size(100, 100);
-            this.picMag.SizeMode =
-                System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picMag.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picMag.TabIndex = 1;
             this.picMag.TabStop = false;
             // 
@@ -74,8 +72,7 @@
             this.btnPojedynek.TabIndex = 1;
             this.btnPojedynek.Text = "Pojedynek";
             this.btnPojedynek.UseVisualStyleBackColor = true;
-            this.btnPojedynek.Click +=
-                new System.EventHandler(this.btnPojedynek_Click);
+            this.btnPojedynek.Click += new System.EventHandler(this.btnPojedynek_Click);
             // 
             // btnWalka
             // 
@@ -102,14 +99,25 @@
             this.txtWynik.Location = new System.Drawing.Point(12, 347);
             this.txtWynik.Multiline = true;
             this.txtWynik.Name = "txtWynik";
+            this.txtWynik.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtWynik.Size = new System.Drawing.Size(776, 91);
             this.txtWynik.TabIndex = 4;
+            // 
+            // lblElapsedTime
+            // 
+            this.lblElapsedTime.AutoSize = true;
+            this.lblElapsedTime.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblElapsedTime.Location = new System.Drawing.Point(12, 9);
+            this.lblElapsedTime.Name = "lblElapsedTime";
+            this.lblElapsedTime.Size = new System.Drawing.Size(0, 21);
+            this.lblElapsedTime.TabIndex = 5;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lblElapsedTime);
             this.Controls.Add(this.txtWynik);
             this.Controls.Add(this.btnWojna);
             this.Controls.Add(this.btnWalka);
@@ -118,8 +126,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.pnlBattlefield.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.picWojownik))
-                .EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picWojownik)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picMag)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

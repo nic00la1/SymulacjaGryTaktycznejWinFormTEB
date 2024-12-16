@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Media;
+using System.Timers;
 using SymulacjaGryTaktycznejWinFormTEB.Classes;
 using WMPLib;
 using Timer = System.Timers.Timer;
@@ -10,11 +12,16 @@ public partial class Form1 : Form
     private WindowsMediaPlayer attackSound;
     private WindowsMediaPlayer magicalWhooshSound;
     private Image bloodEffect;
+    private Stopwatch stopwatch;
+    private Timer updateTimer;
 
     public Form1()
     {
         InitializeComponent();
         LoadResources();
+        stopwatch = new Stopwatch();
+        updateTimer = new Timer(1000);
+        updateTimer.Elapsed += UpdateElapsedTime;
     }
 
     private void LoadResources()
@@ -46,6 +53,7 @@ public partial class Form1 : Form
 
     private async void btnPojedynek_Click(object sender, EventArgs e)
     {
+        StartBattle();
         Wojownik wojownik = new();
         Mag mag = new();
 
@@ -57,10 +65,13 @@ public partial class Form1 : Form
                 ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
         }
+
+        EndBattle();
     }
 
     private async void btnWalka_Click(object sender, EventArgs e)
     {
+        StartBattle();
         Oddzia³ oddzial1 = new(new Wojownik(), 10, "Oddzia³ 1");
         Oddzia³ oddzial2 = new(new Mag(), 5, "Oddzia³ 2");
 
@@ -72,10 +83,13 @@ public partial class Form1 : Form
                 ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
         }
+
+        EndBattle();
     }
 
     private async void btnWojna_Click(object sender, EventArgs e)
     {
+        StartBattle();
         Oddzia³ oddzial1 = new(new Wojownik(), 10, "Oddzia³ 1");
         Oddzia³ oddzial2 = new(new Mag(), 5, "Oddzia³ 2");
         Oddzia³ oddzial3 = new(new Wojownik(), 8, "Oddzia³ 3");
@@ -92,6 +106,23 @@ public partial class Form1 : Form
                 ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
         }
+
+        EndBattle();
+    }
+
+    private void StartBattle()
+    {
+        stopwatch.Restart();
+        updateTimer.Start();
+    }
+
+    private void EndBattle()
+    {
+        stopwatch.Stop();
+        updateTimer.Stop();
+        lblElapsedTime.Text = $"Czas: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}";
+        txtWynik.AppendText(
+            $"Czas rozgrywki: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}\n");
     }
 
     private void AnimateAttack(Jednostka atakujacy, Jednostka obronca)
@@ -140,7 +171,21 @@ public partial class Form1 : Form
         if (InvokeRequired)
             Invoke(new Action<string>(ShowVictoryScreen), message);
         else
+        {
+            EndBattle(); // Stop the stopwatch and timer here
             MessageBox.Show(message, "Zwyciêzca", MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
+        }
+    }
+
+    private void UpdateElapsedTime(object sender, ElapsedEventArgs e)
+    {
+        if (InvokeRequired)
+            Invoke(new Action(() =>
+                lblElapsedTime.Text =
+                    $"Czas: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}"));
+        else
+            lblElapsedTime.Text =
+                $"Czas: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}";
     }
 }
