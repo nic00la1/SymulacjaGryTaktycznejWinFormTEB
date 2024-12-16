@@ -19,6 +19,7 @@ public partial class Form1 : Form
     private Timer updateTimer;
     private Label lblWojownikHP;
     private Label lblMagHP;
+    private bool isBattleActive;
 
     public Form1()
     {
@@ -27,6 +28,7 @@ public partial class Form1 : Form
         stopwatch = new Stopwatch();
         updateTimer = new Timer(1000);
         updateTimer.Elapsed += UpdateElapsedTime;
+        isBattleActive = false;
     }
 
     private void LoadResources()
@@ -62,6 +64,9 @@ public partial class Form1 : Form
 
     private async void btnPojedynek_Click(object sender, EventArgs e)
     {
+        if (isBattleActive) return;
+        isBattleActive = true;
+
         StartBattle();
         Wojownik wojownik = new() { Zycie = DefaultWojownikHP };
         Mag mag = new() { Zycie = DefaultMagHP };
@@ -80,6 +85,9 @@ public partial class Form1 : Form
 
     private async void btnWalka_Click(object sender, EventArgs e)
     {
+        if (isBattleActive) return;
+        isBattleActive = true;
+
         StartBattle();
         Oddzia³ oddzial1 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 10,
             "Oddzia³ 1");
@@ -100,6 +108,9 @@ public partial class Form1 : Form
 
     private async void btnWojna_Click(object sender, EventArgs e)
     {
+        if (isBattleActive) return;
+        isBattleActive = true;
+
         StartBattle();
         Oddzia³ oddzial1 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 10,
             "Oddzia³ 1");
@@ -137,6 +148,7 @@ public partial class Form1 : Form
         lblElapsedTime.Text = $"Czas: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}";
         txtWynik.AppendText(
             $"Czas rozgrywki: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}\n");
+        isBattleActive = false;
     }
 
     private void AnimateAttack(Jednostka atakujacy, Jednostka obronca)
