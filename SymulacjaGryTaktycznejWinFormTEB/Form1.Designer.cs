@@ -22,6 +22,11 @@ namespace SymulacjaGryTaktycznejWinFormTEB
         private WindowsMediaPlayer healSound;
         private WindowsMediaPlayer manaShieldSound;
 
+        // BATTLE SOUNDS
+        private WindowsMediaPlayer battleCrySound;
+        private WindowsMediaPlayer arrowRainSound;
+        private WindowsMediaPlayer warDrumSound;
+
         private System.Windows.Forms.ProgressBar pbWojownikHP;
         private System.Windows.Forms.ProgressBar pbMagHP;
         private System.Windows.Forms.Label lblWojownikUnits;

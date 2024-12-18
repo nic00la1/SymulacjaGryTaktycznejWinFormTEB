@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\arrowRain.mp3" />
     <None Remove="Resources\attack.mp3" />
+    <None Remove="Resources\battleCry.mp3" />
     <None Remove="Resources\berserk.mp3" />
     <None Remove="Resources\blood.png" />
     <None Remove="Resources\crown.png" />
@@ -28,6 +30,7 @@
     <None Remove="Resources\oddzial1.jpg" />
     <None Remove="Resources\oddzial2.jpg" />
     <None Remove="Resources\shieldBlock.mp3" />
+    <None Remove="Resources\warDrum.mp3" />
     <None Remove="Resources\wojownik.png" />
   </ItemGroup>
 
@@ -89,7 +92,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\arrowRain.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\attack.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\battleCry.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\berserk.mp3">
@@ -144,6 +153,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\shieldBlock.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\warDrum.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\wojownik.png">

@@ -117,6 +117,24 @@ public partial class Form1 : Form
         manaShieldSound.settings.autoStart = false;
         manaShieldSound.controls.stop(); // Ensure the sound is stopped
 
+        // Initialize new sound effects
+        battleCrySound = new WindowsMediaPlayer();
+        battleCrySound.URL =
+            Path.Combine(basePath, "Resources", "battleCry.mp3");
+        battleCrySound.settings.autoStart = false;
+        battleCrySound.controls.stop(); // Ensure the sound is stopped
+
+        arrowRainSound = new WindowsMediaPlayer();
+        arrowRainSound.URL =
+            Path.Combine(basePath, "Resources", "arrowRain.mp3");
+        arrowRainSound.settings.autoStart = false;
+        arrowRainSound.controls.stop(); // Ensure the sound is stopped
+
+        warDrumSound = new WindowsMediaPlayer();
+        warDrumSound.URL = Path.Combine(basePath, "Resources", "warDrum.mp3");
+        warDrumSound.settings.autoStart = false;
+        warDrumSound.controls.stop(); // Ensure the sound is stopped
+
         // Set initial HP values
         lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
         lblMagHP.Text = $"HP: {DefaultMagHP}";
@@ -223,15 +241,18 @@ public partial class Form1 : Form
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "oddzial2.jpg"));
         pnlBattlefield.BackgroundImage =
-            await LoadImageAsync(Path.Combine(basePath, "Resources",
-                "map.png"));
+            await LoadImageAsync(
+                Path.Combine(basePath, "Resources", "map2.png"));
 
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
             await Walka.WalkaOddzialowAsync(oddzial1, oddzial2, UpdateUI,
                 (atakujacy, obronca) => AnimateAttack(oddzial1, oddzial2),
-                (message, o1, o2) => ShowVictoryScreen(message, o1, o2));
+                (message, o1, o2) => ShowVictoryScreen(message, o1, o2),
+                PlayBattleCryEffect,
+                PlayArrowRainEffect,
+                PlayWarDrumEffect);
             txtWynik.Text = sw.ToString();
         }
 
@@ -381,13 +402,18 @@ public partial class Form1 : Form
         timer.Tick += (s, e) =>
         {
             defender.BackColor = Color.Transparent;
+            defender.Size = new Size(defender.Size.Width - 10,
+                defender.Size.Height - 10);
+            defender.BorderStyle = BorderStyle.None;
             Invalidate(new Rectangle(defender.Location, defender.Size));
             timer.Stop();
         };
         timer.Start();
 
-        // Change the background color of the defender to red
-        defender.BackColor = Color.Red;
+        // Enlarge the defender's size by 10px and add a red border
+        defender.Size = new Size(defender.Size.Width + 10,
+            defender.Size.Height + 10);
+        defender.BorderStyle = BorderStyle.FixedSingle;
 
         // Play the sound after the animation starts
         if (atakujacyOddzial.Jednostka is Wojownik)
@@ -395,15 +421,17 @@ public partial class Form1 : Form
         else if (atakujacyOddzial.Jednostka is Mag)
             magicalWhooshSound.controls.play();
 
-        // Update the defender's unit count label and HP bar
+        // Update the defender's unit label and progress bar
         defenderUnitLabel.Text = $"Jednostki: {obroncaOddzial.Ilosc}";
-        int totalHP = obroncaOddzial.Ilosc * obroncaOddzial.Jednostka.Zycie;
+        int totalDefenderHP =
+            obroncaOddzial.Ilosc * obroncaOddzial.Jednostka.Zycie;
         defenderHPBar.Maximum =
             obroncaOddzial.Ilosc *
-            DefaultWojownikHP; // Set the maximum value for the progress bar
-        defenderHPBar.Value =
-            Math.Min(defenderHPBar.Maximum, Math.Max(0, totalHP));
+            DefaultWojownikHP; // Ustaw maksymaln¹ wartoœæ paska postêpu
+        defenderHPBar.Value = Math.Min(defenderHPBar.Maximum,
+            Math.Max(0, totalDefenderHP));
     }
+
 
     private void UpdateUI(string message)
     {
@@ -619,5 +647,74 @@ public partial class Form1 : Form
 
         // Change the background color of the target to blue
         target.BackColor = Color.Blue;
+    }
+
+    private void PlayBattleCryEffect(Oddzia³ atakujacy)
+    {
+        // Play a battle cry sound effect
+        battleCrySound.controls.play();
+        PictureBox target = picWojownik;
+
+        // Increase the attack power of the attacking unit for the next attack
+        atakujacy.Jednostka.Atak += 10;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            target.BackColor = Color.Orange;
+            Invalidate(new Rectangle(target.Location, target.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the target to orange
+        target.BackColor = Color.Orange;
+    }
+
+    private void PlayArrowRainEffect(Oddzia³ obronca)
+    {
+        // Play an arrow rain sound effect
+        arrowRainSound.controls.play();
+        PictureBox target = picMag;
+
+        // Deal additional damage to the defending unit
+        obronca.Jednostka.Zycie -= 10;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            target.BackColor = Color.Gray;
+            Invalidate(new Rectangle(target.Location, target.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the target to gray
+        target.BackColor = Color.Gray;
+    }
+
+    private void PlayWarDrumEffect(Oddzia³ atakujacy)
+    {
+        // Play a war drum sound effect
+        warDrumSound.controls.play();
+        PictureBox target = picWojownik;
+
+        // Increase the defense of the attacking unit for the next attack
+        atakujacy.Jednostka.Obrona += 10;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            target.BackColor = Color.Brown;
+            Invalidate(new Rectangle(target.Location, target.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the target to brown
+        target.BackColor = Color.Brown;
     }
 }
