@@ -27,8 +27,14 @@ public class Oddział
         return rand.Next(minObrazenia, maxObrazenia + 1);
     }
 
-    public int ObliczZycie()
+    public int ObliczCalkowiteZycie()
     {
         return Jednostka.Zycie * Ilosc;
+    }
+
+    public void ResetZycie()
+    {
+        Jednostka.Zycie =
+            Jednostka.MaxObrazenia; // Reset Zycie to default value
     }
 }

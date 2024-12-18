@@ -24,6 +24,9 @@
     <None Remove="Resources\manaShield.mp3" />
     <None Remove="Resources\manaShield.png" />
     <None Remove="Resources\map.png" />
+    <None Remove="Resources\map2.png" />
+    <None Remove="Resources\oddzial1.jpg" />
+    <None Remove="Resources\oddzial2.jpg" />
     <None Remove="Resources\shieldBlock.mp3" />
     <None Remove="Resources\wojownik.png" />
   </ItemGroup>
@@ -129,6 +132,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\map.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\map2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\oddzial1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\oddzial2.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\shieldBlock.mp3">

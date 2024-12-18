@@ -190,9 +190,9 @@ public partial class Form1 : Form
 
         StartBattle();
         Oddzia³ oddzial1 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 30,
-            "Alfa");
-        Oddzia³ oddzial2 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 15,
-            "Beta");
+            "Dziewczynki");
+        Oddzia³ oddzial2 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 30,
+            "Ch³opcy");
 
         // Clear previous results
         txtWynik.Clear();
@@ -217,11 +217,11 @@ public partial class Form1 : Form
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
         picWojownik.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
-                "wojownik.png"));
+                "oddzial1.jpg"));
         picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
         picMag.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
-                "mag.png"));
+                "oddzial2.jpg"));
         pnlBattlefield.BackgroundImage =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "map.png"));
@@ -235,7 +235,7 @@ public partial class Form1 : Form
             txtWynik.Text = sw.ToString();
         }
 
-        EndBattle();
+        EndBattle(oddzial1.Ilosc, oddzial2.Ilosc);
     }
 
 
@@ -306,7 +306,7 @@ public partial class Form1 : Form
         updateTimer.Start();
     }
 
-    private void EndBattle()
+    private void EndBattle(int wojownikUnits = 0, int magUnits = 0)
     {
         stopwatch.Stop();
         updateTimer.Stop();
@@ -314,6 +314,18 @@ public partial class Form1 : Form
         txtWynik.AppendText(
             $"Czas rozgrywki: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}\n");
         isBattleActive = false;
+
+        // Set unit counts and HP to actual values
+        lblWojownikUnits.Text = $"Jednostki: {wojownikUnits}";
+        lblMagUnits.Text = $"Jednostki: {magUnits}";
+        lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
+        lblMagHP.Text = $"HP: {DefaultMagHP}";
+        pbWojownikHP.Maximum = wojownikUnits * DefaultWojownikHP;
+        pbWojownikHP.Value = Math.Min(pbWojownikHP.Maximum,
+            Math.Max(0, wojownikUnits * DefaultWojownikHP));
+        pbMagHP.Maximum = magUnits * DefaultMagHP;
+        pbMagHP.Value = Math.Min(pbMagHP.Maximum,
+            Math.Max(0, magUnits * DefaultMagHP));
     }
 
     private void AnimateAttack(Jednostka atakujacy, Jednostka obronca)
@@ -321,6 +333,8 @@ public partial class Form1 : Form
         PictureBox attacker = atakujacy is Wojownik ? picWojownik : picMag;
         PictureBox defender = obronca is Wojownik ? picWojownik : picMag;
         Label defenderHPLabel = obronca is Wojownik ? lblWojownikHP : lblMagHP;
+        ProgressBar defenderHPBar =
+            obronca is Wojownik ? pbWojownikHP : pbMagHP;
 
         // Create a timer to handle the animation
         System.Windows.Forms.Timer timer = new() { Interval = 500 };
@@ -341,8 +355,10 @@ public partial class Form1 : Form
         else if (atakujacy is Mag)
             magicalWhooshSound.controls.play();
 
-        // Update the defender's HP label
+        // Update the defender's HP label and progress bar
         defenderHPLabel.Text = $"HP: {obronca.Zycie}";
+        defenderHPBar.Value = Math.Min(defenderHPBar.Maximum,
+            Math.Max(0, obronca.Zycie));
     }
 
     private void AnimateAttack(Oddzia³ atakujacyOddzial, Oddzia³ obroncaOddzial)
@@ -385,7 +401,8 @@ public partial class Form1 : Form
         defenderHPBar.Maximum =
             obroncaOddzial.Ilosc *
             DefaultWojownikHP; // Set the maximum value for the progress bar
-        defenderHPBar.Value = totalHP;
+        defenderHPBar.Value =
+            Math.Min(defenderHPBar.Maximum, Math.Max(0, totalHP));
     }
 
     private void UpdateUI(string message)
@@ -393,7 +410,31 @@ public partial class Form1 : Form
         if (InvokeRequired)
             Invoke(new Action<string>(UpdateUI), message);
         else
-            txtWynik.AppendText(message + Environment.NewLine);
+        {
+            if (message.StartsWith("UPDATE_HP"))
+            {
+                string[] parts = message.Split(' ');
+                string nazwa = parts[1];
+                int hp = int.Parse(parts[2]);
+
+                if (nazwa == "Dziewczynki")
+                    pbWojownikHP.Value = Math.Min(pbWojownikHP.Maximum,
+                        Math.Max(0, hp));
+                else if (nazwa == "Ch³opcy")
+                    pbMagHP.Value = Math.Min(pbMagHP.Maximum, Math.Max(0, hp));
+            } else if (message.StartsWith("UPDATE_UNITS"))
+            {
+                string[] parts = message.Split(' ');
+                string nazwa = parts[1];
+                int units = int.Parse(parts[2]);
+
+                if (nazwa == "Dziewczynki")
+                    lblWojownikUnits.Text = $"Jednostki: {units}";
+                else if (nazwa == "Ch³opcy")
+                    lblMagUnits.Text = $"Jednostki: {units}";
+            } else
+                txtWynik.AppendText(message + Environment.NewLine);
+        }
     }
 
     private void ShowVictoryScreen(string message,
@@ -410,7 +451,10 @@ public partial class Form1 : Form
                 jednostka2);
         else
         {
-            EndBattle(); // Stop the stopwatch and timer here
+            // Stop the stopwatch and timer here
+            int wojownikUnits = oddzial1?.Ilosc ?? 0;
+            int magUnits = oddzial2?.Ilosc ?? 0;
+            EndBattle(wojownikUnits, magUnits);
 
             // Create summary
             string summary =
@@ -430,17 +474,6 @@ public partial class Form1 : Form
             using (SummaryForm summaryForm = new("Zwyciêzca", summary))
             {
                 summaryForm.ShowDialog();
-            }
-
-            // Reset unit counts or HP to default values
-            if (oddzial1 != null && oddzial2 != null)
-            {
-                lblWojownikUnits.Text = $"Jednostki: {DefaultWojownikHP / 10}";
-                lblMagUnits.Text = $"Jednostki: {DefaultMagHP / 10}";
-            } else
-            {
-                lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
-                lblMagHP.Text = $"HP: {DefaultMagHP}";
             }
         }
     }

@@ -22,8 +22,8 @@ public class Armia
         return Oddziały.Sum(o => o.ObliczObrazenia());
     }
 
-    public int ObliczZycie()
+    public int ObliczCalkowiteZycie()
     {
-        return Oddziały.Sum(o => o.ObliczZycie());
+        return Oddziały.Sum(o => o.ObliczCalkowiteZycie());
     }
 }

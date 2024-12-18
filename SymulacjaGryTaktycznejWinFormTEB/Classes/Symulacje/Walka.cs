@@ -8,134 +8,70 @@ namespace SymulacjaGryTaktycznejWinFormTEB.Classes.Symulacje;
 
 public static class Walka
 {
-    public static async Task WalkaAsync(Oddział oddzial1,
-                                        Oddział oddzial2,
-                                        Action<string> updateUI,
-                                        Action<Jednostka, Jednostka>
-                                            animateAttack,
-                                        Action<string> showVictoryScreen
+    private static readonly Random random = new();
+
+    public static async Task WalkaOddzialowAsync(
+        Oddział oddzial1,
+        Oddział oddzial2,
+        Action<string> updateUI,
+        Action<Oddział, Oddział> animateAttack,
+        Action<string, Oddział, Oddział> showVictoryScreen
     )
     {
-        while (oddzial1.Ilosc > 0 && oddzial2.Ilosc > 0)
+        Oddział atakujacy, obronca;
+
+        if (random.Next(2) == 0)
         {
-            int obrazenia1 = oddzial1.ObliczObrazenia();
-            int obrazenia2 = oddzial2.ObliczObrazenia();
-
-            // Apply damage to oddzial2
-            int remainingDamage = obrazenia1;
-            while (remainingDamage > 0 && oddzial2.Ilosc > 0)
-            {
-                int currentUnitHp = oddzial2.Jednostka.Zycie;
-                if (remainingDamage >= currentUnitHp)
-                {
-                    remainingDamage -= currentUnitHp;
-                    oddzial2.Ilosc--;
-                } else
-                {
-                    oddzial2.Jednostka.Zycie -= remainingDamage;
-                    remainingDamage = 0;
-                }
-            }
-
-            // Apply damage to oddzial1
-            remainingDamage = obrazenia2;
-            while (remainingDamage > 0 && oddzial1.Ilosc > 0)
-            {
-                int currentUnitHp = oddzial1.Jednostka.Zycie;
-                if (remainingDamage >= currentUnitHp)
-                {
-                    remainingDamage -= currentUnitHp;
-                    oddzial1.Ilosc--;
-                } else
-                {
-                    oddzial1.Jednostka.Zycie -= remainingDamage;
-                    remainingDamage = 0;
-                }
-            }
-
-            updateUI(
-                $"Oddział {oddzial1.Nazwa} ma {oddzial1.Ilosc} jednostek.");
-            updateUI(
-                $"Oddział {oddzial2.Nazwa} ma {oddzial2.Ilosc} jednostek.");
-
-            animateAttack(oddzial1.Jednostka, oddzial2.Jednostka);
-
-            // Introduce a delay between actions
-            await Task.Delay(2000);
+            atakujacy = oddzial1;
+            obronca = oddzial2;
+        } else
+        {
+            atakujacy = oddzial2;
+            obronca = oddzial1;
         }
 
-        string result;
-        if (oddzial1.Ilosc > 0)
-            result = $"Oddział {oddzial1.Nazwa} wygrywa.";
-        else
-            result = $"Oddział {oddzial2.Nazwa} wygrywa.";
-        updateUI(result);
-        showVictoryScreen(result);
-    }
-
-    public static async Task WalkaOddzialowAsync(Oddział oddzial1,
-                                                 Oddział oddzial2,
-                                                 Action<string> updateUI,
-                                                 Action<Jednostka, Jednostka>
-                                                     animateAttack,
-                                                 Action<string, Oddział,
-                                                     Oddział> showVictoryScreen
-    )
-    {
         while (oddzial1.Ilosc > 0 && oddzial2.Ilosc > 0)
         {
-            int obrazenia1 = oddzial1.ObliczObrazenia();
-            int obrazenia2 = oddzial2.ObliczObrazenia();
+            // Oblicz obrażenia atakującego oddziału
+            int obrazenia = atakujacy.ObliczObrazenia();
+            updateUI($"{atakujacy.Nazwa} zadaje {obrazenia} obrażeń.");
+            animateAttack(atakujacy, obronca);
 
-            // Apply damage to oddzial2
-            int remainingDamage = obrazenia1;
-            while (remainingDamage > 0 && oddzial2.Ilosc > 0)
-            {
-                int currentUnitHp = oddzial2.Jednostka.Zycie;
-                if (remainingDamage >= currentUnitHp)
+            // Zadaj obrażenia obrońcy
+            while (obrazenia > 0 && obronca.Ilosc > 0)
+                if (obrazenia >= obronca.Jednostka.Zycie)
                 {
-                    remainingDamage -= currentUnitHp;
-                    oddzial2.Ilosc--;
+                    obrazenia -= obronca.Jednostka.Zycie;
+                    obronca.Ilosc--;
+                    if (obronca.Ilosc > 0)
+                        obronca
+                            .ResetZycie(); // Reset Zycie to default value only if there are remaining units
                 } else
                 {
-                    oddzial2.Jednostka.Zycie -= remainingDamage;
-                    remainingDamage = 0;
+                    obronca.Jednostka.Zycie -= obrazenia;
+                    obrazenia = 0;
                 }
-            }
 
-            // Apply damage to oddzial1
-            remainingDamage = obrazenia2;
-            while (remainingDamage > 0 && oddzial1.Ilosc > 0)
+            updateUI($"{obronca.Nazwa} ma teraz {obronca.Ilosc} jednostek.");
+            updateUI($"UPDATE_UNITS {obronca.Nazwa} {obronca.Ilosc}");
+            updateUI(
+                $"UPDATE_HP {obronca.Nazwa} {obronca.ObliczCalkowiteZycie()}");
+
+            // Sprawdź, czy obrońca przetrwał
+            if (obronca.Ilosc <= 0)
             {
-                int currentUnitHp = oddzial1.Jednostka.Zycie;
-                if (remainingDamage >= currentUnitHp)
-                {
-                    remainingDamage -= currentUnitHp;
-                    oddzial1.Ilosc--;
-                } else
-                {
-                    oddzial1.Jednostka.Zycie -= remainingDamage;
-                    remainingDamage = 0;
-                }
+                showVictoryScreen($"{atakujacy.Nazwa} wygrywa!", oddzial1,
+                    oddzial2);
+                return;
             }
 
-            updateUI(
-                $"Oddział {oddzial1.Nazwa} ma {oddzial1.Ilosc} jednostek.");
-            updateUI(
-                $"Oddział {oddzial2.Nazwa} ma {oddzial2.Ilosc} jednostek.");
+            // Zamień role atakującego i obrońcy
+            Oddział temp = atakujacy;
+            atakujacy = obronca;
+            obronca = temp;
 
-            animateAttack(oddzial1.Jednostka, oddzial2.Jednostka);
-
-            // Introduce a delay between actions
+            // Wprowadź opóźnienie między turami
             await Task.Delay(2000);
         }
-
-        string result;
-        if (oddzial1.Ilosc > 0)
-            result = $"Oddział {oddzial1.Nazwa} wygrywa.";
-        else
-            result = $"Oddział {oddzial2.Nazwa} wygrywa.";
-        updateUI(result);
-        showVictoryScreen(result, oddzial1, oddzial2);
     }
 }
