@@ -28,6 +28,7 @@ public partial class Form1 : Form
     {
         InitializeComponent();
         LoadResources(selectedCharacter, selectedOpponent);
+        LoadInitialImages(); // Load initial images
         stopwatch = new Stopwatch();
         updateTimer = new Timer(1000);
         updateTimer.Elapsed += UpdateElapsedTime;
@@ -49,37 +50,19 @@ public partial class Form1 : Form
         lblMagHP.Text = $"HP: {opponent.Zycie}";
     }
 
-    private Image ResizeImage(Image image, int width, int height)
+    private async void LoadInitialImages()
     {
-        Rectangle destRect = new(0, 0, width, height);
-        Bitmap destImage = new(width, height);
-
-        destImage.SetResolution(image.HorizontalResolution,
-            image.VerticalResolution);
-
-        using (Graphics graphics = Graphics.FromImage(destImage))
-        {
-            graphics.CompositingMode =
-                System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-            graphics.CompositingQuality = System.Drawing.Drawing2D
-                .CompositingQuality.HighQuality;
-            graphics.InterpolationMode = System.Drawing.Drawing2D
-                .InterpolationMode.HighQualityBicubic;
-            graphics.SmoothingMode =
-                System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            graphics.PixelOffsetMode =
-                System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-
-            using (ImageAttributes wrapMode = new())
-            {
-                wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode
-                    .TileFlipXY);
-                graphics.DrawImage(image, destRect, 0, 0, image.Width,
-                    image.Height, GraphicsUnit.Pixel, wrapMode);
-            }
-        }
-
-        return destImage;
+        string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        picWojownik.Image =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "wojownik.png"));
+        picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+        picMag.Image =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "mag.png"));
+        pnlBattlefield.BackgroundImage =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "map.png"));
     }
 
     private void LoadResources(string selectedCharacter,
