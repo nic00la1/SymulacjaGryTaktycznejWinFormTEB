@@ -300,14 +300,14 @@ public partial class Form1 : Form
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
         picWojownik.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
-                "wojownik.png"));
+                "armia1.png"));
         picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
         picMag.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
-                "mag.png"));
+                "armia2.png"));
         pnlBattlefield.BackgroundImage =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
-                "map.png"));
+                "map3.png"));
 
         using (StringWriter sw = new())
         {
@@ -445,10 +445,11 @@ public partial class Form1 : Form
                 string nazwa = parts[1];
                 int hp = int.Parse(parts[2]);
 
-                if (nazwa == "Dziewczynki")
+                if (nazwa == "Dziewczynki" || nazwa == "Oddzia³ 1" ||
+                    nazwa == "Oddzia³ 3")
                     pbWojownikHP.Value = Math.Min(pbWojownikHP.Maximum,
                         Math.Max(0, hp));
-                else if (nazwa == "Ch³opcy")
+                else if (nazwa == "Ch³opcy" || nazwa == "Oddzia³ 2")
                     pbMagHP.Value = Math.Min(pbMagHP.Maximum, Math.Max(0, hp));
             } else if (message.StartsWith("UPDATE_UNITS"))
             {
@@ -456,10 +457,18 @@ public partial class Form1 : Form
                 string nazwa = parts[1];
                 int units = int.Parse(parts[2]);
 
-                if (nazwa == "Dziewczynki")
+                if (nazwa == "Dziewczynki" || nazwa == "Oddzia³ 1" ||
+                    nazwa == "Oddzia³ 3")
                     lblWojownikUnits.Text = $"Jednostki: {units}";
-                else if (nazwa == "Ch³opcy")
+                else if (nazwa == "Ch³opcy" || nazwa == "Oddzia³ 2")
                     lblMagUnits.Text = $"Jednostki: {units}";
+            } else if (message.StartsWith("UPDATE_DAMAGE"))
+            {
+                string[] parts = message.Split(' ');
+                string nazwa = parts[1];
+                int damage = int.Parse(parts[2]);
+
+                txtWynik.AppendText($"{nazwa} zadaje {damage} obra¿eñ.\n");
             } else
                 txtWynik.AppendText(message + Environment.NewLine);
         }

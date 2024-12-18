@@ -16,18 +16,26 @@ public static class Wojna
                                         Action<string> showVictoryScreen
     )
     {
+        int totalDamageDealtByArmia1 = 0;
+        int totalDamageDealtByArmia2 = 0;
+
         while (armia1.Oddziały.Any(o => o.Ilosc > 0) &&
                armia2.Oddziały.Any(o => o.Ilosc > 0))
         {
             int obrazenia1 = armia1.ObliczObrazenia();
             int obrazenia2 = armia2.ObliczObrazenia();
 
-            // Apply damage to armia2
-            int remainingDamage = obrazenia1;
+            totalDamageDealtByArmia1 += obrazenia1;
+            totalDamageDealtByArmia2 += obrazenia2;
+
+            // Podział obrażeń na oddziały wrogiej armii
+            int obrazeniaNaOddzial1 = obrazenia1 / armia2.Oddziały.Count;
+            int obrazeniaNaOddzial2 = obrazenia2 / armia1.Oddziały.Count;
+
+            // Zastosowanie obrażeń do armia2
             foreach (Oddział oddzial in armia2.Oddziały)
             {
-                if (remainingDamage <= 0) break;
-
+                int remainingDamage = obrazeniaNaOddzial1;
                 while (remainingDamage > 0 && oddzial.Ilosc > 0)
                 {
                     int currentUnitHp = oddzial.Jednostka.Zycie;
@@ -35,20 +43,26 @@ public static class Wojna
                     {
                         remainingDamage -= currentUnitHp;
                         oddzial.Ilosc--;
+                        updateUI(
+                            $"DEBUG: {oddzial.Nazwa} Ilosc decremented to {oddzial.Ilosc}");
                     } else
                     {
                         oddzial.Jednostka.Zycie -= remainingDamage;
                         remainingDamage = 0;
                     }
                 }
+
+                updateUI(
+                    $"{oddzial.Nazwa} ma teraz {oddzial.Ilosc} jednostek.");
+                updateUI(
+                    $"UPDATE_HP {oddzial.Nazwa} {oddzial.Jednostka.Zycie}");
+                updateUI($"UPDATE_UNITS {oddzial.Nazwa} {oddzial.Ilosc}");
             }
 
-            // Apply damage to armia1
-            remainingDamage = obrazenia2;
+            // Zastosowanie obrażeń do armia1
             foreach (Oddział oddzial in armia1.Oddziały)
             {
-                if (remainingDamage <= 0) break;
-
+                int remainingDamage = obrazeniaNaOddzial2;
                 while (remainingDamage > 0 && oddzial.Ilosc > 0)
                 {
                     int currentUnitHp = oddzial.Jednostka.Zycie;
@@ -56,23 +70,29 @@ public static class Wojna
                     {
                         remainingDamage -= currentUnitHp;
                         oddzial.Ilosc--;
+                        updateUI(
+                            $"DEBUG: {oddzial.Nazwa} Ilosc decremented to {oddzial.Ilosc}");
                     } else
                     {
                         oddzial.Jednostka.Zycie -= remainingDamage;
                         remainingDamage = 0;
                     }
                 }
+
+                updateUI(
+                    $"{oddzial.Nazwa} ma teraz {oddzial.Ilosc} jednostek.");
+                updateUI(
+                    $"UPDATE_HP {oddzial.Nazwa} {oddzial.Jednostka.Zycie}");
+                updateUI($"UPDATE_UNITS {oddzial.Nazwa} {oddzial.Ilosc}");
             }
 
-            updateUI(
-                $"Armia 1 ma {armia1.Oddziały.Sum(o => o.Ilosc)} jednostek.");
-            updateUI(
-                $"Armia 2 ma {armia2.Oddziały.Sum(o => o.Ilosc)} jednostek.");
+            updateUI($"Armia 1 zadaje {obrazenia1} obrażeń.");
+            updateUI($"Armia 2 zadaje {obrazenia2} obrażeń.");
 
             animateAttack(armia1.Oddziały.First().Jednostka,
                 armia2.Oddziały.First().Jednostka);
 
-            // Introduce a delay between actions
+            // Wprowadzenie opóźnienia między akcjami
             await Task.Delay(2000);
         }
 
@@ -83,5 +103,10 @@ public static class Wojna
             result = "Armia 2 wygrywa.";
         updateUI(result);
         showVictoryScreen(result);
+
+        updateUI(
+            $"Całkowite obrażenia zadane przez Armię 1: {totalDamageDealtByArmia1}");
+        updateUI(
+            $"Całkowite obrażenia zadane przez Armię 2: {totalDamageDealtByArmia2}");
     }
 }
