@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Media;
 using System.Timers;
 using SymulacjaGryTaktycznejWinFormTEB.Classes;
@@ -48,80 +49,139 @@ public partial class Form1 : Form
         lblMagHP.Text = $"HP: {opponent.Zycie}";
     }
 
+    private Image ResizeImage(Image image, int width, int height)
+    {
+        Rectangle destRect = new(0, 0, width, height);
+        Bitmap destImage = new(width, height);
+
+        destImage.SetResolution(image.HorizontalResolution,
+            image.VerticalResolution);
+
+        using (Graphics graphics = Graphics.FromImage(destImage))
+        {
+            graphics.CompositingMode =
+                System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+            graphics.CompositingQuality = System.Drawing.Drawing2D
+                .CompositingQuality.HighQuality;
+            graphics.InterpolationMode = System.Drawing.Drawing2D
+                .InterpolationMode.HighQualityBicubic;
+            graphics.SmoothingMode =
+                System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            graphics.PixelOffsetMode =
+                System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+            using (ImageAttributes wrapMode = new())
+            {
+                wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode
+                    .TileFlipXY);
+                graphics.DrawImage(image, destRect, 0, 0, image.Width,
+                    image.Height, GraphicsUnit.Pixel, wrapMode);
+            }
+        }
+
+        return destImage;
+    }
+
     private void LoadResources(string selectedCharacter,
                                string selectedOpponent
     )
     {
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
-        // Set images based on selected characters
-        if (selectedCharacter == "Wojownik")
-            picWojownik.Image =
-                Image.FromFile(Path.Combine(basePath, "Resources",
-                    "wojownik.png"));
-        else
-            picWojownik.Image =
-                Image.FromFile(Path.Combine(basePath, "Resources", "mag.png"));
-
-        if (selectedOpponent == "Wojownik")
-            picMag.Image =
-                Image.FromFile(Path.Combine(basePath, "Resources",
-                    "wojownik.png"));
-        else
-            picMag.Image =
-                Image.FromFile(Path.Combine(basePath, "Resources", "mag.png"));
-
-        pnlBattlefield.BackgroundImage =
-            Image.FromFile(Path.Combine(basePath, "Resources", "map.png"));
-
-        attackSound = new WindowsMediaPlayer();
-        attackSound.URL = Path.Combine(basePath, "Resources", "attack.mp3");
-        attackSound.settings.autoStart = false;
-
-        magicalWhooshSound = new WindowsMediaPlayer();
-        magicalWhooshSound.URL =
-            Path.Combine(basePath, "Resources", "magicalWhoosh.mp3");
-        magicalWhooshSound.settings.autoStart = false;
-
-        // Load new sound effects
-        berserkSound = new WindowsMediaPlayer();
-        berserkSound.URL = Path.Combine(basePath, "Resources", "berserk.mp3");
-        berserkSound.settings.autoStart = false;
-
-        shieldBlockSound = new WindowsMediaPlayer();
-        shieldBlockSound.URL =
-            Path.Combine(basePath, "Resources", "shieldBlock.mp3");
-        shieldBlockSound.settings.autoStart = false;
-
-        doubleStrikeSound = new WindowsMediaPlayer();
-        doubleStrikeSound.URL =
-            Path.Combine(basePath, "Resources", "doubleStrike.mp3");
-        doubleStrikeSound.settings.autoStart = false;
-
-        fireballSound = new WindowsMediaPlayer();
-        fireballSound.URL = Path.Combine(basePath, "Resources", "fireball.mp3");
-        fireballSound.settings.autoStart = false;
-
-        healSound = new WindowsMediaPlayer();
-        healSound.URL = Path.Combine(basePath, "Resources", "heal.mp3");
-        healSound.settings.autoStart = false;
-
-        manaShieldSound = new WindowsMediaPlayer();
-        manaShieldSound.URL =
-            Path.Combine(basePath, "Resources", "manaShield.mp3");
-        manaShieldSound.settings.autoStart = false;
-
         try
         {
+            // Set images based on selected characters
+            using (Image wojownikImage =
+                   Image.FromFile(Path.Combine(basePath, "Resources",
+                       "wojownik.png")))
+            using (Image magImage =
+                   Image.FromFile(
+                       Path.Combine(basePath, "Resources", "mag.png")))
+            using (Image mapImage =
+                   Image.FromFile(
+                       Path.Combine(basePath, "Resources", "map.png")))
+            {
+                picWojownik.Image = selectedCharacter == "Wojownik"
+                    ? ResizeImage(wojownikImage, picWojownik.Width,
+                        picWojownik.Height)
+                    : ResizeImage(magImage, picWojownik.Width,
+                        picWojownik.Height);
+                picMag.Image = selectedOpponent == "Wojownik"
+                    ? ResizeImage(wojownikImage, picMag.Width, picMag.Height)
+                    : ResizeImage(magImage, picMag.Width, picMag.Height);
+                pnlBattlefield.BackgroundImage = ResizeImage(mapImage,
+                    pnlBattlefield.Width, pnlBattlefield.Height);
+            }
+
+            // Initialize sound effects without playing them
+            attackSound = new WindowsMediaPlayer();
+            attackSound.URL = Path.Combine(basePath, "Resources", "attack.mp3");
+            attackSound.settings.autoStart = false;
+            attackSound.controls.stop(); // Ensure the sound is stopped
+
+            magicalWhooshSound = new WindowsMediaPlayer();
+            magicalWhooshSound.URL = Path.Combine(basePath, "Resources",
+                "magicalWhoosh.mp3");
+            magicalWhooshSound.settings.autoStart = false;
+            magicalWhooshSound.controls.stop(); // Ensure the sound is stopped
+
+            // Load new sound effects
+            berserkSound = new WindowsMediaPlayer();
+            berserkSound.URL =
+                Path.Combine(basePath, "Resources", "berserk.mp3");
+            berserkSound.settings.autoStart = false;
+            berserkSound.controls.stop(); // Ensure the sound is stopped
+
+            shieldBlockSound = new WindowsMediaPlayer();
+            shieldBlockSound.URL =
+                Path.Combine(basePath, "Resources", "shieldBlock.mp3");
+            shieldBlockSound.settings.autoStart = false;
+            shieldBlockSound.controls.stop(); // Ensure the sound is stopped
+
+            doubleStrikeSound = new WindowsMediaPlayer();
+            doubleStrikeSound.URL =
+                Path.Combine(basePath, "Resources", "doubleStrike.mp3");
+            doubleStrikeSound.settings.autoStart = false;
+            doubleStrikeSound.controls.stop(); // Ensure the sound is stopped
+
+            fireballSound = new WindowsMediaPlayer();
+            fireballSound.URL =
+                Path.Combine(basePath, "Resources", "fireball.mp3");
+            fireballSound.settings.autoStart = false;
+            fireballSound.controls.stop(); // Ensure the sound is stopped
+
+            healSound = new WindowsMediaPlayer();
+            healSound.URL = Path.Combine(basePath, "Resources", "heal.mp3");
+            healSound.settings.autoStart = false;
+            healSound.controls.stop(); // Ensure the sound is stopped
+
+            manaShieldSound = new WindowsMediaPlayer();
+            manaShieldSound.URL =
+                Path.Combine(basePath, "Resources", "manaShield.mp3");
+            manaShieldSound.settings.autoStart = false;
+            manaShieldSound.controls.stop(); // Ensure the sound is stopped
+
             // Load new visual effects
-            fireballEffect =
-                Image.FromFile(Path.Combine(basePath, "Resources",
-                    "fireball.png"));
-            healEffect =
-                Image.FromFile(Path.Combine(basePath, "Resources", "heal.png"));
-            manaShieldEffect =
-                Image.FromFile(Path.Combine(basePath, "Resources",
-                    "manaShield.png"));
+            using (Image fireballEffectImage =
+                   Image.FromFile(Path.Combine(basePath, "Resources",
+                       "fireball.png")))
+            using (Image healEffectImage =
+                   Image.FromFile(Path.Combine(basePath, "Resources",
+                       "heal.png")))
+            using (Image manaShieldEffectImage =
+                   Image.FromFile(Path.Combine(basePath, "Resources",
+                       "manaShield.png")))
+            {
+                fireballEffect =
+                    ResizeImage(fireballEffectImage, 100,
+                        100); // Adjust size as needed
+                healEffect =
+                    ResizeImage(healEffectImage, 100,
+                        100); // Adjust size as needed
+                manaShieldEffect =
+                    ResizeImage(manaShieldEffectImage, 100,
+                        100); // Adjust size as needed
+            }
 
             // Debugging: Check if images are loaded correctly
             Debug.WriteLine("Images loaded successfully.");
