@@ -44,15 +44,15 @@ namespace SymulacjaGryTaktycznejWinFormTEB
             pnlBattlefield = new Panel();
             picWojownik = new PictureBox();
             picMag = new PictureBox();
+            pbWojownikHP = new ProgressBar();
+            pbMagHP = new ProgressBar();
+            lblWojownikUnits = new Label();
+            lblMagUnits = new Label();
             btnPojedynek = new Button();
             btnWalka = new Button();
             btnWojna = new Button();
             txtWynik = new TextBox();
             lblElapsedTime = new Label();
-            pbWojownikHP = new ProgressBar();
-            pbMagHP = new ProgressBar();
-            lblWojownikUnits = new Label();
-            lblMagUnits = new Label();
             pnlBattlefield.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picWojownik).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picMag).BeginInit();
@@ -113,46 +113,46 @@ namespace SymulacjaGryTaktycznejWinFormTEB
             // 
             // pbWojownikHP
             // 
-            pbWojownikHP.Location = new Point(50, 240);
+            pbWojownikHP.Location = new Point(50, 206);
             pbWojownikHP.Name = "pbWojownikHP";
             pbWojownikHP.Size = new Size(100, 23);
             pbWojownikHP.TabIndex = 2;
             pbWojownikHP.Value = 100;
-            pbWojownikHP.Visible = false; // Hide by default
-                                          // 
-                                          // pbMagHP
-                                          // 
-            pbMagHP.Location = new Point(626, 240);
+            pbWojownikHP.Visible = false;
+            // 
+            // pbMagHP
+            // 
+            pbMagHP.Location = new Point(626, 206);
             pbMagHP.Name = "pbMagHP";
             pbMagHP.Size = new Size(100, 23);
-            pbMagHP.TabIndex = 3;
+            pbMagHP.TabIndex = 2;
             pbMagHP.Value = 100;
-            pbMagHP.Visible = false; // Hide by default
-                                     // 
-                                     // lblWojownikUnits
-                                     // 
+            pbMagHP.Visible = false;
+            // 
+            // lblWojownikUnits
+            // 
             lblWojownikUnits.AutoSize = true;
             lblWojownikUnits.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblWojownikUnits.Location = new Point(50, 270);
+            lblWojownikUnits.Location = new Point(50, 232);
             lblWojownikUnits.Name = "lblWojownikUnits";
-            lblWojownikUnits.Size = new Size(73, 20);
+            lblWojownikUnits.Size = new Size(116, 20);
             lblWojownikUnits.TabIndex = 4;
             lblWojownikUnits.Text = "Jednostki: 30";
-            lblWojownikUnits.Visible = false; // Hide by default
-                                              // 
-                                              // lblMagUnits
-                                              // 
+            lblWojownikUnits.Visible = false;
+            // 
+            // lblMagUnits
+            // 
             lblMagUnits.AutoSize = true;
             lblMagUnits.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblMagUnits.Location = new Point(626, 270);
+            lblMagUnits.Location = new Point(626, 232);
             lblMagUnits.Name = "lblMagUnits";
-            lblMagUnits.Size = new Size(73, 20);
+            lblMagUnits.Size = new Size(116, 20);
             lblMagUnits.TabIndex = 5;
             lblMagUnits.Text = "Jednostki: 15";
-            lblMagUnits.Visible = false; // Hide by default
-                                         // 
-                                         // btnPojedynek
-                                         // 
+            lblMagUnits.Visible = false;
+            // 
+            // btnPojedynek
+            // 
             btnPojedynek.Location = new Point(12, 318);
             btnPojedynek.Name = "btnPojedynek";
             btnPojedynek.Size = new Size(75, 23);
@@ -189,7 +189,6 @@ namespace SymulacjaGryTaktycznejWinFormTEB
             txtWynik.ScrollBars = ScrollBars.Vertical;
             txtWynik.Size = new Size(776, 91);
             txtWynik.TabIndex = 4;
-         
             // 
             // lblElapsedTime
             // 

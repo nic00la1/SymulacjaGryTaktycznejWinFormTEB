@@ -146,6 +146,10 @@ public partial class Form1 : Form
         pbWojownikHP.Visible = false;
         pbMagHP.Visible = false;
 
+        // Show HP labels for pojedynki
+        lblWojownikHP.Visible = true;
+        lblMagHP.Visible = true;
+
         // Load images on demand
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
         picWojownik.Image =
@@ -199,6 +203,16 @@ public partial class Form1 : Form
         pbWojownikHP.Visible = true;
         pbMagHP.Visible = true;
 
+        // Hide HP labels for walki
+        lblWojownikHP.Visible = false;
+        lblMagHP.Visible = false;
+
+        // Set initial HP values for progress bars
+        pbWojownikHP.Maximum = oddzial1.Ilosc * DefaultWojownikHP;
+        pbWojownikHP.Value = oddzial1.Ilosc * DefaultWojownikHP;
+        pbMagHP.Maximum = oddzial2.Ilosc * DefaultWojownikHP;
+        pbMagHP.Value = oddzial2.Ilosc * DefaultWojownikHP;
+
         // Load images on demand
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
         picWojownik.Image =
@@ -250,6 +264,16 @@ public partial class Form1 : Form
         lblMagUnits.Visible = true;
         pbWojownikHP.Visible = true;
         pbMagHP.Visible = true;
+
+        // Hide HP labels for wojna
+        lblWojownikHP.Visible = false;
+        lblMagHP.Visible = false;
+
+        // Set initial HP values for progress bars
+        pbWojownikHP.Maximum = oddzial1.Ilosc * DefaultWojownikHP;
+        pbWojownikHP.Value = oddzial1.Ilosc * DefaultWojownikHP;
+        pbMagHP.Maximum = oddzial2.Ilosc * DefaultMagHP;
+        pbMagHP.Value = oddzial2.Ilosc * DefaultMagHP;
 
         // Load images on demand
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -357,9 +381,11 @@ public partial class Form1 : Form
 
         // Update the defender's unit count label and HP bar
         defenderUnitLabel.Text = $"Jednostki: {obroncaOddzial.Ilosc}";
+        int totalHP = obroncaOddzial.Ilosc * obroncaOddzial.Jednostka.Zycie;
         defenderHPBar.Maximum =
+            obroncaOddzial.Ilosc *
             DefaultWojownikHP; // Set the maximum value for the progress bar
-        defenderHPBar.Value = obroncaOddzial.Jednostka.Zycie;
+        defenderHPBar.Value = totalHP;
     }
 
     private void UpdateUI(string message)
