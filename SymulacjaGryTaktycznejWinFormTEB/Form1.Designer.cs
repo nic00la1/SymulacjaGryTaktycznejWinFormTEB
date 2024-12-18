@@ -21,9 +21,11 @@ namespace SymulacjaGryTaktycznejWinFormTEB
         private WindowsMediaPlayer fireballSound;
         private WindowsMediaPlayer healSound;
         private WindowsMediaPlayer manaShieldSound;
-        private Image fireballEffect;
-        private Image healEffect;
-        private Image manaShieldEffect;
+
+        private System.Windows.Forms.ProgressBar pbWojownikHP;
+        private System.Windows.Forms.ProgressBar pbMagHP;
+        private System.Windows.Forms.Label lblWojownikUnits;
+        private System.Windows.Forms.Label lblMagUnits;
 
         protected override void Dispose(bool disposing)
         {
@@ -37,153 +39,186 @@ namespace SymulacjaGryTaktycznejWinFormTEB
 
         private void InitializeComponent()
         {
-            this.lblWojownikHP = new System.Windows.Forms.Label();
-            this.lblMagHP = new System.Windows.Forms.Label();
-            this.pnlBattlefield = new System.Windows.Forms.Panel();
-            this.picWojownik = new System.Windows.Forms.PictureBox();
-            this.picMag = new System.Windows.Forms.PictureBox();
-            this.btnPojedynek = new System.Windows.Forms.Button();
-            this.btnWalka = new System.Windows.Forms.Button();
-            this.btnWojna = new System.Windows.Forms.Button();
-            this.txtWynik = new System.Windows.Forms.TextBox();
-            this.lblElapsedTime = new System.Windows.Forms.Label();
-            this.pnlBattlefield.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picWojownik)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picMag)).BeginInit();
-            this.SuspendLayout();
+            lblWojownikHP = new Label();
+            lblMagHP = new Label();
+            pnlBattlefield = new Panel();
+            picWojownik = new PictureBox();
+            picMag = new PictureBox();
+            btnPojedynek = new Button();
+            btnWalka = new Button();
+            btnWojna = new Button();
+            txtWynik = new TextBox();
+            lblElapsedTime = new Label();
+            pbWojownikHP = new ProgressBar();
+            pbMagHP = new ProgressBar();
+            lblWojownikUnits = new Label();
+            lblMagUnits = new Label();
+            pnlBattlefield.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picWojownik).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picMag).BeginInit();
+            SuspendLayout();
             // 
             // lblWojownikHP
             // 
-            this.lblWojownikHP.AutoSize = true;
-            this.lblWojownikHP.Font = new System.Drawing.Font(
-                "Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold,
-                System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblWojownikHP.Location =
-                new System.Drawing.Point(50,
-                    210); // Adjust the location as needed
-            this.lblWojownikHP.Name = "lblWojownikHP";
-            this.lblWojownikHP.Size = new System.Drawing.Size(100, 20);
-            this.lblWojownikHP.TabIndex = 0;
-            this.lblWojownikHP.Text = "HP: 100";
+            lblWojownikHP.AutoSize = true;
+            lblWojownikHP.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblWojownikHP.Location = new Point(50, 210);
+            lblWojownikHP.Name = "lblWojownikHP";
+            lblWojownikHP.Size = new Size(73, 20);
+            lblWojownikHP.TabIndex = 0;
+            lblWojownikHP.Text = "HP: 100";
             // 
             // lblMagHP
             // 
-            this.lblMagHP.AutoSize = true;
-            this.lblMagHP.Font = new System.Drawing.Font("Microsoft Sans Serif",
-                12F, System.Drawing.FontStyle.Bold,
-                System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMagHP.Location =
-                new System.Drawing.Point(626,
-                    210); // Adjust the location as needed
-            this.lblMagHP.Name = "lblMagHP";
-            this.lblMagHP.Size = new System.Drawing.Size(100, 20);
-            this.lblMagHP.TabIndex = 1;
-            this.lblMagHP.Text = "HP: 100";
+            lblMagHP.AutoSize = true;
+            lblMagHP.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblMagHP.Location = new Point(626, 210);
+            lblMagHP.Name = "lblMagHP";
+            lblMagHP.Size = new Size(73, 20);
+            lblMagHP.TabIndex = 1;
+            lblMagHP.Text = "HP: 100";
             // 
             // pnlBattlefield
             // 
-            this.pnlBattlefield.Controls.Add(this.picWojownik);
-            this.pnlBattlefield.Controls.Add(this.picMag);
-            this.pnlBattlefield.Controls.Add(this.lblWojownikHP);
-            this.pnlBattlefield.Controls.Add(this.lblMagHP);
-            this.pnlBattlefield.Location = new System.Drawing.Point(12, 12);
-            this.pnlBattlefield.Name = "pnlBattlefield";
-            this.pnlBattlefield.Size = new System.Drawing.Size(776, 300);
-            this.pnlBattlefield.TabIndex = 0;
+            pnlBattlefield.Controls.Add(picWojownik);
+            pnlBattlefield.Controls.Add(picMag);
+            pnlBattlefield.Controls.Add(lblWojownikHP);
+            pnlBattlefield.Controls.Add(lblMagHP);
+            pnlBattlefield.Controls.Add(pbWojownikHP);
+            pnlBattlefield.Controls.Add(pbMagHP);
+            pnlBattlefield.Controls.Add(lblWojownikUnits);
+            pnlBattlefield.Controls.Add(lblMagUnits);
+            pnlBattlefield.Location = new Point(12, 12);
+            pnlBattlefield.Name = "pnlBattlefield";
+            pnlBattlefield.Size = new Size(776, 300);
+            pnlBattlefield.TabIndex = 0;
             // 
             // picWojownik
             // 
-            this.picWojownik.Location = new System.Drawing.Point(50, 100);
-            this.picWojownik.Name = "picWojownik";
-            this.picWojownik.Size = new System.Drawing.Size(100, 100);
-            this.picWojownik.SizeMode =
-                System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picWojownik.TabIndex = 0;
-            this.picWojownik.TabStop = false;
+            picWojownik.Location = new Point(50, 100);
+            picWojownik.Name = "picWojownik";
+            picWojownik.Size = new Size(100, 100);
+            picWojownik.SizeMode = PictureBoxSizeMode.StretchImage;
+            picWojownik.TabIndex = 0;
+            picWojownik.TabStop = false;
             // 
             // picMag
             // 
-            this.picMag.Location = new System.Drawing.Point(626, 100);
-            this.picMag.Name = "picMag";
-            this.picMag.Size = new System.Drawing.Size(100, 100);
-            this.picMag.SizeMode =
-                System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picMag.TabIndex = 1;
-            this.picMag.TabStop = false;
+            picMag.Location = new Point(626, 100);
+            picMag.Name = "picMag";
+            picMag.Size = new Size(100, 100);
+            picMag.SizeMode = PictureBoxSizeMode.StretchImage;
+            picMag.TabIndex = 1;
+            picMag.TabStop = false;
             // 
-            // btnPojedynek
+            // pbWojownikHP
             // 
-            this.btnPojedynek.Location = new System.Drawing.Point(12, 318);
-            this.btnPojedynek.Name = "btnPojedynek";
-            this.btnPojedynek.Size = new System.Drawing.Size(75, 23);
-            this.btnPojedynek.TabIndex = 1;
-            this.btnPojedynek.Text = "Pojedynek";
-            this.btnPojedynek.UseVisualStyleBackColor = true;
-            this.btnPojedynek.Click +=
-                new System.EventHandler(this.btnPojedynek_Click);
+            pbWojownikHP.Location = new Point(50, 240);
+            pbWojownikHP.Name = "pbWojownikHP";
+            pbWojownikHP.Size = new Size(100, 23);
+            pbWojownikHP.TabIndex = 2;
+            pbWojownikHP.Value = 100;
+            pbWojownikHP.Visible = false; // Hide by default
+                                          // 
+                                          // pbMagHP
+                                          // 
+            pbMagHP.Location = new Point(626, 240);
+            pbMagHP.Name = "pbMagHP";
+            pbMagHP.Size = new Size(100, 23);
+            pbMagHP.TabIndex = 3;
+            pbMagHP.Value = 100;
+            pbMagHP.Visible = false; // Hide by default
+                                     // 
+                                     // lblWojownikUnits
+                                     // 
+            lblWojownikUnits.AutoSize = true;
+            lblWojownikUnits.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblWojownikUnits.Location = new Point(50, 270);
+            lblWojownikUnits.Name = "lblWojownikUnits";
+            lblWojownikUnits.Size = new Size(73, 20);
+            lblWojownikUnits.TabIndex = 4;
+            lblWojownikUnits.Text = "Jednostki: 30";
+            lblWojownikUnits.Visible = false; // Hide by default
+                                              // 
+                                              // lblMagUnits
+                                              // 
+            lblMagUnits.AutoSize = true;
+            lblMagUnits.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblMagUnits.Location = new Point(626, 270);
+            lblMagUnits.Name = "lblMagUnits";
+            lblMagUnits.Size = new Size(73, 20);
+            lblMagUnits.TabIndex = 5;
+            lblMagUnits.Text = "Jednostki: 15";
+            lblMagUnits.Visible = false; // Hide by default
+                                         // 
+                                         // btnPojedynek
+                                         // 
+            btnPojedynek.Location = new Point(12, 318);
+            btnPojedynek.Name = "btnPojedynek";
+            btnPojedynek.Size = new Size(75, 23);
+            btnPojedynek.TabIndex = 1;
+            btnPojedynek.Text = "Pojedynek";
+            btnPojedynek.UseVisualStyleBackColor = true;
+            btnPojedynek.Click += btnPojedynek_Click;
             // 
             // btnWalka
             // 
-            this.btnWalka.Location = new System.Drawing.Point(93, 318);
-            this.btnWalka.Name = "btnWalka";
-            this.btnWalka.Size = new System.Drawing.Size(75, 23);
-            this.btnWalka.TabIndex = 2;
-            this.btnWalka.Text = "Walka";
-            this.btnWalka.UseVisualStyleBackColor = true;
-            this.btnWalka.Click += new System.EventHandler(this.btnWalka_Click);
+            btnWalka.Location = new Point(93, 318);
+            btnWalka.Name = "btnWalka";
+            btnWalka.Size = new Size(75, 23);
+            btnWalka.TabIndex = 2;
+            btnWalka.Text = "Walka";
+            btnWalka.UseVisualStyleBackColor = true;
+            btnWalka.Click += btnWalka_Click;
             // 
             // btnWojna
             // 
-            this.btnWojna.Location = new System.Drawing.Point(174, 318);
-            this.btnWojna.Name = "btnWojna";
-            this.btnWojna.Size = new System.Drawing.Size(75, 23);
-            this.btnWojna.TabIndex = 3;
-            this.btnWojna.Text = "Wojna";
-            this.btnWojna.UseVisualStyleBackColor = true;
-            this.btnWojna.Click += new System.EventHandler(this.btnWojna_Click);
+            btnWojna.Location = new Point(174, 318);
+            btnWojna.Name = "btnWojna";
+            btnWojna.Size = new Size(75, 23);
+            btnWojna.TabIndex = 3;
+            btnWojna.Text = "Wojna";
+            btnWojna.UseVisualStyleBackColor = true;
+            btnWojna.Click += btnWojna_Click;
             // 
             // txtWynik
             // 
-            this.txtWynik.Location = new System.Drawing.Point(12, 347);
-            this.txtWynik.Multiline = true;
-            this.txtWynik.Name = "txtWynik";
-            this.txtWynik.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtWynik.Size = new System.Drawing.Size(776, 91);
-            this.txtWynik.TabIndex = 4;
+            txtWynik.Location = new Point(12, 347);
+            txtWynik.Multiline = true;
+            txtWynik.Name = "txtWynik";
+            txtWynik.ScrollBars = ScrollBars.Vertical;
+            txtWynik.Size = new Size(776, 91);
+            txtWynik.TabIndex = 4;
+         
             // 
             // lblElapsedTime
             // 
-            this.lblElapsedTime.AutoSize = true;
-            this.lblElapsedTime.Font = new System.Drawing.Font("Segoe UI", 12F,
-                System.Drawing.FontStyle.Regular,
-                System.Drawing.GraphicsUnit.Point);
-            this.lblElapsedTime.Location = new System.Drawing.Point(12, 9);
-            this.lblElapsedTime.Name = "lblElapsedTime";
-            this.lblElapsedTime.Size = new System.Drawing.Size(0, 21);
-            this.lblElapsedTime.TabIndex = 5;
+            lblElapsedTime.AutoSize = true;
+            lblElapsedTime.Font = new Font("Segoe UI", 12F);
+            lblElapsedTime.Location = new Point(12, 9);
+            lblElapsedTime.Name = "lblElapsedTime";
+            lblElapsedTime.Size = new Size(0, 21);
+            lblElapsedTime.TabIndex = 5;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 500);
-            this.Controls.Add(this.lblElapsedTime);
-            this.Controls.Add(this.txtWynik);
-            this.Controls.Add(this.btnWojna);
-            this.Controls.Add(this.btnWalka);
-            this.Controls.Add(this.btnPojedynek);
-            this.Controls.Add(this.pnlBattlefield);
-            this.Name = "Form1";
-            this.Text = "Tactical Battle Simulator by Nicola Kaleta";
-            this.Icon =
-                new System.Drawing.Icon(
-                    "Resources/ikonka.ico"); // Set the path to your icon file
-            this.pnlBattlefield.ResumeLayout(false);
-            this.pnlBattlefield.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picWojownik)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picMag)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 500);
+            Controls.Add(lblElapsedTime);
+            Controls.Add(txtWynik);
+            Controls.Add(btnWojna);
+            Controls.Add(btnWalka);
+            Controls.Add(btnPojedynek);
+            Controls.Add(pnlBattlefield);
+            Name = "Form1";
+            Text = "Tactical Battle Simulator by Nicola Kaleta";
+            pnlBattlefield.ResumeLayout(false);
+            pnlBattlefield.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)picWojownik).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picMag).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
     }
 }

@@ -137,6 +137,15 @@ public partial class Form1 : Form
         Wojownik wojownik = new() { Zycie = DefaultWojownikHP };
         Mag mag = new() { Zycie = DefaultMagHP };
 
+        // Clear previous results
+        txtWynik.Clear();
+
+        // Hide unit labels and progress bars for pojedynki
+        lblWojownikUnits.Visible = false;
+        lblMagUnits.Visible = false;
+        pbWojownikHP.Visible = false;
+        pbMagHP.Visible = false;
+
         // Load images on demand
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
         picWojownik.Image =
@@ -150,13 +159,13 @@ public partial class Form1 : Form
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "map.png"));
 
-
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
             await Pojedynek.PojedynekAsync(wojownik, mag, UpdateUI,
                 (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
-                ShowVictoryScreen,
+                (message) =>
+                    ShowVictoryScreen(message, null, null, wojownik, mag),
                 PlayBerserkEffect,
                 PlayShieldBlockEffect,
                 PlayDoubleStrikeEffect,
@@ -169,16 +178,26 @@ public partial class Form1 : Form
         EndBattle();
     }
 
+
     private async void btnWalka_Click(object sender, EventArgs e)
     {
         if (isBattleActive) return;
         isBattleActive = true;
 
         StartBattle();
-        Oddzia³ oddzial1 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 10,
-            "Oddzia³ 1");
-        Oddzia³ oddzial2 =
-            new(new Mag() { Zycie = DefaultMagHP }, 5, "Oddzia³ 2");
+        Oddzia³ oddzial1 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 30,
+            "Alfa");
+        Oddzia³ oddzial2 = new(new Wojownik() { Zycie = DefaultWojownikHP }, 15,
+            "Beta");
+
+        // Clear previous results
+        txtWynik.Clear();
+
+        // Show unit labels and progress bars for walki
+        lblWojownikUnits.Visible = true;
+        lblMagUnits.Visible = true;
+        pbWojownikHP.Visible = true;
+        pbMagHP.Visible = true;
 
         // Load images on demand
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -193,18 +212,18 @@ public partial class Form1 : Form
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "map.png"));
 
-
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
-            await Walka.WalkaAsync(oddzial1, oddzial2, UpdateUI,
-                (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
-                ShowVictoryScreen);
+            await Walka.WalkaOddzialowAsync(oddzial1, oddzial2, UpdateUI,
+                (atakujacy, obronca) => AnimateAttack(oddzial1, oddzial2),
+                (message, o1, o2) => ShowVictoryScreen(message, o1, o2));
             txtWynik.Text = sw.ToString();
         }
 
         EndBattle();
     }
+
 
     private async void btnWojna_Click(object sender, EventArgs e)
     {
@@ -223,6 +242,15 @@ public partial class Form1 : Form
             new Bohater(5, 5));
         Armia armia2 = new(new List<Oddzia³> { oddzial2 }, new Bohater(3, 3));
 
+        // Clear previous results
+        txtWynik.Clear();
+
+        // Show unit labels and progress bars for wojna
+        lblWojownikUnits.Visible = true;
+        lblMagUnits.Visible = true;
+        pbWojownikHP.Visible = true;
+        pbMagHP.Visible = true;
+
         // Load images on demand
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
         picWojownik.Image =
@@ -240,8 +268,8 @@ public partial class Form1 : Form
         {
             Console.SetOut(sw);
             await Wojna.WojnaAsync(armia1, armia2, UpdateUI,
-                (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
-                ShowVictoryScreen);
+                (atakujacy, obronca) => AnimateAttack(oddzial1, oddzial2),
+                (message) => ShowVictoryScreen(message, null, null));
             txtWynik.Text = sw.ToString();
         }
 
@@ -293,6 +321,47 @@ public partial class Form1 : Form
         defenderHPLabel.Text = $"HP: {obronca.Zycie}";
     }
 
+    private void AnimateAttack(Oddzia³ atakujacyOddzial, Oddzia³ obroncaOddzial)
+    {
+        PictureBox attacker = atakujacyOddzial.Jednostka is Wojownik
+            ? picWojownik
+            : picMag;
+        PictureBox defender = obroncaOddzial.Jednostka is Wojownik
+            ? picWojownik
+            : picMag;
+        Label defenderUnitLabel = obroncaOddzial.Jednostka is Wojownik
+            ? lblWojownikUnits
+            : lblMagUnits;
+        ProgressBar defenderHPBar = obroncaOddzial.Jednostka is Wojownik
+            ? pbWojownikHP
+            : pbMagHP;
+
+        // Create a timer to handle the animation
+        System.Windows.Forms.Timer timer = new() { Interval = 500 };
+        timer.Tick += (s, e) =>
+        {
+            defender.BackColor = Color.Transparent;
+            Invalidate(new Rectangle(defender.Location, defender.Size));
+            timer.Stop();
+        };
+        timer.Start();
+
+        // Change the background color of the defender to red
+        defender.BackColor = Color.Red;
+
+        // Play the sound after the animation starts
+        if (atakujacyOddzial.Jednostka is Wojownik)
+            attackSound.controls.play();
+        else if (atakujacyOddzial.Jednostka is Mag)
+            magicalWhooshSound.controls.play();
+
+        // Update the defender's unit count label and HP bar
+        defenderUnitLabel.Text = $"Jednostki: {obroncaOddzial.Ilosc}";
+        defenderHPBar.Maximum =
+            DefaultWojownikHP; // Set the maximum value for the progress bar
+        defenderHPBar.Value = obroncaOddzial.Jednostka.Zycie;
+    }
+
     private void UpdateUI(string message)
     {
         if (InvokeRequired)
@@ -301,10 +370,18 @@ public partial class Form1 : Form
             txtWynik.AppendText(message + Environment.NewLine);
     }
 
-    private void ShowVictoryScreen(string message)
+    private void ShowVictoryScreen(string message,
+                                   Oddzia³? oddzial1,
+                                   Oddzia³? oddzial2,
+                                   Jednostka? jednostka1 = null,
+                                   Jednostka? jednostka2 = null
+    )
     {
         if (InvokeRequired)
-            Invoke(new Action<string>(ShowVictoryScreen), message);
+            Invoke(
+                new Action<string, Oddzia³?, Oddzia³?, Jednostka?, Jednostka?>(
+                    ShowVictoryScreen), message, oddzial1, oddzial2, jednostka1,
+                jednostka2);
         else
         {
             EndBattle(); // Stop the stopwatch and timer here
@@ -312,9 +389,16 @@ public partial class Form1 : Form
             // Create summary
             string summary =
                 $"Czas rozgrywki: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}\n" +
-                $"Wynik: {message}\n" +
-                $"HP Wojownika: {lblWojownikHP.Text}\n" +
-                $"HP Maga: {lblMagHP.Text}\n";
+                $"Wynik: {message}\n";
+
+            if (oddzial1 != null && oddzial2 != null)
+                summary +=
+                    $"Oddzia³ {oddzial1.Nazwa} ma {oddzial1.Ilosc} jednostek.\n" +
+                    $"Oddzia³ {oddzial2.Nazwa} ma {oddzial2.Ilosc} jednostek.\n";
+            else if (jednostka1 != null && jednostka2 != null)
+                summary +=
+                    $"HP {jednostka1.GetType().Name}: {jednostka1.Zycie}\n" +
+                    $"HP {jednostka2.GetType().Name}: {jednostka2.Zycie}\n";
 
             // Show summary form
             using (SummaryForm summaryForm = new("Zwyciêzca", summary))
@@ -322,9 +406,16 @@ public partial class Form1 : Form
                 summaryForm.ShowDialog();
             }
 
-            // Reset HP to default values
-            lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
-            lblMagHP.Text = $"HP: {DefaultMagHP}";
+            // Reset unit counts or HP to default values
+            if (oddzial1 != null && oddzial2 != null)
+            {
+                lblWojownikUnits.Text = $"Jednostki: {DefaultWojownikHP / 10}";
+                lblMagUnits.Text = $"Jednostki: {DefaultMagHP / 10}";
+            } else
+            {
+                lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
+                lblMagHP.Text = $"HP: {DefaultMagHP}";
+            }
         }
     }
 

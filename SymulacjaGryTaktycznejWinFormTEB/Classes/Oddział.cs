@@ -21,7 +21,10 @@ public class Oddział
 
     public int ObliczObrazenia()
     {
-        return Jednostka.ObliczObrazenia() * Ilosc;
+        Random rand = new();
+        int minObrazenia = Jednostka.MinObrazenia * Ilosc;
+        int maxObrazenia = Jednostka.MaxObrazenia * Ilosc;
+        return rand.Next(minObrazenia, maxObrazenia + 1);
     }
 
     public int ObliczZycie()
