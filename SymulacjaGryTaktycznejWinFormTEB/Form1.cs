@@ -142,12 +142,14 @@ public partial class Form1 : Form
         picWojownik.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "wojownik.png"));
+        picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
         picMag.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "mag.png"));
         pnlBattlefield.BackgroundImage =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "map.png"));
+
 
         using (StringWriter sw = new())
         {
@@ -183,12 +185,14 @@ public partial class Form1 : Form
         picWojownik.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "wojownik.png"));
+        picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
         picMag.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "mag.png"));
         pnlBattlefield.BackgroundImage =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "map.png"));
+
 
         using (StringWriter sw = new())
         {
@@ -224,6 +228,7 @@ public partial class Form1 : Form
         picWojownik.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "wojownik.png"));
+        picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
         picMag.Image =
             await LoadImageAsync(Path.Combine(basePath, "Resources",
                 "mag.png"));
