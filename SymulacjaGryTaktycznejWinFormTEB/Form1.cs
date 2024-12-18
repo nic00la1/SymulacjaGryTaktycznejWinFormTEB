@@ -88,134 +88,61 @@ public partial class Form1 : Form
     {
         string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
-        try
-        {
-            // Set images based on selected characters
-            using (Image wojownikImage =
-                   Image.FromFile(Path.Combine(basePath, "Resources",
-                       "wojownik.png")))
-            using (Image magImage =
-                   Image.FromFile(
-                       Path.Combine(basePath, "Resources", "mag.png")))
-            using (Image mapImage =
-                   Image.FromFile(
-                       Path.Combine(basePath, "Resources", "map.png")))
-            {
-                picWojownik.Image = selectedCharacter == "Wojownik"
-                    ? ResizeImage(wojownikImage, picWojownik.Width,
-                        picWojownik.Height)
-                    : ResizeImage(magImage, picWojownik.Width,
-                        picWojownik.Height);
-                picMag.Image = selectedOpponent == "Wojownik"
-                    ? ResizeImage(wojownikImage, picMag.Width, picMag.Height)
-                    : ResizeImage(magImage, picMag.Width, picMag.Height);
-                pnlBattlefield.BackgroundImage = ResizeImage(mapImage,
-                    pnlBattlefield.Width, pnlBattlefield.Height);
-            }
+        // Initialize sound effects without playing them
+        attackSound = new WindowsMediaPlayer();
+        attackSound.URL = Path.Combine(basePath, "Resources", "attack.mp3");
+        attackSound.settings.autoStart = false;
+        attackSound.controls.stop(); // Ensure the sound is stopped
 
-            // Initialize sound effects without playing them
-            attackSound = new WindowsMediaPlayer();
-            attackSound.URL = Path.Combine(basePath, "Resources", "attack.mp3");
-            attackSound.settings.autoStart = false;
-            attackSound.controls.stop(); // Ensure the sound is stopped
+        magicalWhooshSound = new WindowsMediaPlayer();
+        magicalWhooshSound.URL =
+            Path.Combine(basePath, "Resources", "magicalWhoosh.mp3");
+        magicalWhooshSound.settings.autoStart = false;
+        magicalWhooshSound.controls.stop(); // Ensure the sound is stopped
 
-            magicalWhooshSound = new WindowsMediaPlayer();
-            magicalWhooshSound.URL = Path.Combine(basePath, "Resources",
-                "magicalWhoosh.mp3");
-            magicalWhooshSound.settings.autoStart = false;
-            magicalWhooshSound.controls.stop(); // Ensure the sound is stopped
+        // Load new sound effects
+        berserkSound = new WindowsMediaPlayer();
+        berserkSound.URL = Path.Combine(basePath, "Resources", "berserk.mp3");
+        berserkSound.settings.autoStart = false;
+        berserkSound.controls.stop(); // Ensure the sound is stopped
 
-            // Load new sound effects
-            berserkSound = new WindowsMediaPlayer();
-            berserkSound.URL =
-                Path.Combine(basePath, "Resources", "berserk.mp3");
-            berserkSound.settings.autoStart = false;
-            berserkSound.controls.stop(); // Ensure the sound is stopped
+        shieldBlockSound = new WindowsMediaPlayer();
+        shieldBlockSound.URL =
+            Path.Combine(basePath, "Resources", "shieldBlock.mp3");
+        shieldBlockSound.settings.autoStart = false;
+        shieldBlockSound.controls.stop(); // Ensure the sound is stopped
 
-            shieldBlockSound = new WindowsMediaPlayer();
-            shieldBlockSound.URL =
-                Path.Combine(basePath, "Resources", "shieldBlock.mp3");
-            shieldBlockSound.settings.autoStart = false;
-            shieldBlockSound.controls.stop(); // Ensure the sound is stopped
+        doubleStrikeSound = new WindowsMediaPlayer();
+        doubleStrikeSound.URL =
+            Path.Combine(basePath, "Resources", "doubleStrike.mp3");
+        doubleStrikeSound.settings.autoStart = false;
+        doubleStrikeSound.controls.stop(); // Ensure the sound is stopped
 
-            doubleStrikeSound = new WindowsMediaPlayer();
-            doubleStrikeSound.URL =
-                Path.Combine(basePath, "Resources", "doubleStrike.mp3");
-            doubleStrikeSound.settings.autoStart = false;
-            doubleStrikeSound.controls.stop(); // Ensure the sound is stopped
+        fireballSound = new WindowsMediaPlayer();
+        fireballSound.URL = Path.Combine(basePath, "Resources", "fireball.mp3");
+        fireballSound.settings.autoStart = false;
+        fireballSound.controls.stop(); // Ensure the sound is stopped
 
-            fireballSound = new WindowsMediaPlayer();
-            fireballSound.URL =
-                Path.Combine(basePath, "Resources", "fireball.mp3");
-            fireballSound.settings.autoStart = false;
-            fireballSound.controls.stop(); // Ensure the sound is stopped
+        healSound = new WindowsMediaPlayer();
+        healSound.URL = Path.Combine(basePath, "Resources", "heal.mp3");
+        healSound.settings.autoStart = false;
+        healSound.controls.stop(); // Ensure the sound is stopped
 
-            healSound = new WindowsMediaPlayer();
-            healSound.URL = Path.Combine(basePath, "Resources", "heal.mp3");
-            healSound.settings.autoStart = false;
-            healSound.controls.stop(); // Ensure the sound is stopped
-
-            manaShieldSound = new WindowsMediaPlayer();
-            manaShieldSound.URL =
-                Path.Combine(basePath, "Resources", "manaShield.mp3");
-            manaShieldSound.settings.autoStart = false;
-            manaShieldSound.controls.stop(); // Ensure the sound is stopped
-
-            // Load new visual effects
-            using (Image fireballEffectImage =
-                   Image.FromFile(Path.Combine(basePath, "Resources",
-                       "fireball.png")))
-            using (Image healEffectImage =
-                   Image.FromFile(Path.Combine(basePath, "Resources",
-                       "heal.png")))
-            using (Image manaShieldEffectImage =
-                   Image.FromFile(Path.Combine(basePath, "Resources",
-                       "manaShield.png")))
-            {
-                fireballEffect =
-                    ResizeImage(fireballEffectImage, 100,
-                        100); // Adjust size as needed
-                healEffect =
-                    ResizeImage(healEffectImage, 100,
-                        100); // Adjust size as needed
-                manaShieldEffect =
-                    ResizeImage(manaShieldEffectImage, 100,
-                        100); // Adjust size as needed
-            }
-
-            // Debugging: Check if images are loaded correctly
-            Debug.WriteLine("Images loaded successfully.");
-            Debug.WriteLine($"fireballEffect: {fireballEffect != null}");
-            Debug.WriteLine($"healEffect: {healEffect != null}");
-            Debug.WriteLine($"manaShieldEffect: {manaShieldEffect != null}");
-        }
-        catch (OutOfMemoryException ex)
-        {
-            MessageBox.Show(
-                "Failed to load images due to insufficient memory. Please ensure the images are optimized and try again.",
-                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Debug.WriteLine($"OutOfMemoryException: {ex.Message}");
-        }
-        catch (FileNotFoundException ex)
-        {
-            MessageBox.Show(
-                "One or more image files were not found. Please check the file paths and try again.",
-                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Debug.WriteLine($"FileNotFoundException: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(
-                "An unexpected error occurred while loading images.", "Error",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Debug.WriteLine($"Exception: {ex.Message}");
-        }
-
-        picWojownik.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+        manaShieldSound = new WindowsMediaPlayer();
+        manaShieldSound.URL =
+            Path.Combine(basePath, "Resources", "manaShield.mp3");
+        manaShieldSound.settings.autoStart = false;
+        manaShieldSound.controls.stop(); // Ensure the sound is stopped
 
         // Set initial HP values
         lblWojownikHP.Text = $"HP: {DefaultWojownikHP}";
         lblMagHP.Text = $"HP: {DefaultMagHP}";
+    }
+
+
+    private async Task<Image> LoadImageAsync(string filePath)
+    {
+        return await Task.Run(() => Image.FromFile(filePath));
     }
 
     private async void btnPojedynek_Click(object sender, EventArgs e)
@@ -226,6 +153,18 @@ public partial class Form1 : Form
         StartBattle();
         Wojownik wojownik = new() { Zycie = DefaultWojownikHP };
         Mag mag = new() { Zycie = DefaultMagHP };
+
+        // Load images on demand
+        string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        picWojownik.Image =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "wojownik.png"));
+        picMag.Image =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "mag.png"));
+        pnlBattlefield.BackgroundImage =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "map.png"));
 
         using (StringWriter sw = new())
         {
@@ -256,6 +195,18 @@ public partial class Form1 : Form
         Oddzia³ oddzial2 =
             new(new Mag() { Zycie = DefaultMagHP }, 5, "Oddzia³ 2");
 
+        // Load images on demand
+        string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        picWojownik.Image =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "wojownik.png"));
+        picMag.Image =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "mag.png"));
+        pnlBattlefield.BackgroundImage =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "map.png"));
+
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
@@ -285,6 +236,18 @@ public partial class Form1 : Form
             new Bohater(5, 5));
         Armia armia2 = new(new List<Oddzia³> { oddzial2 }, new Bohater(3, 3));
 
+        // Load images on demand
+        string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        picWojownik.Image =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "wojownik.png"));
+        picMag.Image =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "mag.png"));
+        pnlBattlefield.BackgroundImage =
+            await LoadImageAsync(Path.Combine(basePath, "Resources",
+                "map.png"));
+
         using (StringWriter sw = new())
         {
             Console.SetOut(sw);
@@ -292,68 +255,6 @@ public partial class Form1 : Form
                 (atakujacy, obronca) => AnimateAttack(atakujacy, obronca),
                 ShowVictoryScreen);
             txtWynik.Text = sw.ToString();
-        }
-
-        EndBattle();
-    }
-
-    private void btnAttack_Click(object sender, EventArgs e)
-    {
-        if (isBattleActive) return;
-        isBattleActive = true;
-
-        StartBattle();
-        PerformAttack(player, opponent);
-        EndBattle();
-    }
-
-    private void btnCastSpell_Click(object sender, EventArgs e)
-    {
-        if (isBattleActive) return;
-        isBattleActive = true;
-
-        StartBattle();
-        if (player is Mag mag)
-        {
-            int spellDamage = mag.CastSpell();
-            opponent.Zycie -= spellDamage;
-            UpdateUI(
-                $"{mag.GetType().Name} rzuca zaklêcie za {spellDamage} pkt obra¿eñ. {opponent.GetType().Name} pozostaje {opponent.Zycie} HP");
-            PlayFireballEffect();
-        }
-
-        EndBattle();
-    }
-
-    private void btnHeal_Click(object sender, EventArgs e)
-    {
-        if (isBattleActive) return;
-        isBattleActive = true;
-
-        StartBattle();
-        if (player is Mag mag)
-        {
-            mag.Heal();
-            UpdateUI(
-                $"{mag.GetType().Name} leczy siê za 20 HP. {mag.GetType().Name} ma teraz {mag.Zycie} HP");
-            PlayHealEffect();
-        }
-
-        EndBattle();
-    }
-
-    private void btnManaShield_Click(object sender, EventArgs e)
-    {
-        if (isBattleActive) return;
-        isBattleActive = true;
-
-        StartBattle();
-        if (player is Mag mag)
-        {
-            mag.ManaShield();
-            UpdateUI(
-                $"{mag.GetType().Name} u¿ywa tarczy many. Obrona wzrasta o 10.");
-            PlayManaShieldEffect();
         }
 
         EndBattle();
@@ -373,24 +274,6 @@ public partial class Form1 : Form
         txtWynik.AppendText(
             $"Czas rozgrywki: {stopwatch.Elapsed:hh\\:mm\\:ss\\.fff}\n");
         isBattleActive = false;
-    }
-
-    private void PerformAttack(Jednostka atakujacy, Jednostka obronca)
-    {
-        int obrazenia =
-            Math.Max(1, atakujacy.ObliczObrazenia() - obronca.Obrona);
-        obronca.Zycie -= obrazenia;
-        UpdateUI(
-            $"{atakujacy.GetType().Name} atakuje za {obrazenia} pkt obra¿eñ. {obronca.GetType().Name} pozostaje {obronca.Zycie} HP");
-        AnimateAttack(atakujacy, obronca);
-
-        if (obronca.Zycie <= 0)
-        {
-            string result =
-                $"{obronca.GetType().Name} ginie. {atakujacy.GetType().Name} wygrywa.";
-            UpdateUI(result);
-            ShowVictoryScreen(result);
-        }
     }
 
     private void AnimateAttack(Jednostka atakujacy, Jednostka obronca)
