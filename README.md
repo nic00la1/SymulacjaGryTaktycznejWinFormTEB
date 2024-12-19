@@ -1,3 +1,4 @@
 # Symulacja gry taktycznej - Windows Forms C#
 <p>Link do prezentacji - filmik YT (Symulacja gry taktycznej)</p>
-https://www.youtube.com/watch?v=Uif8Mief6sU&ab_channel=nic00la1
+
+[![Watch the video]([https://img.youtube.com/vi/Uif8Mief6sU/0.jpg])](https://youtu.be/Uif8Mief6sU)
